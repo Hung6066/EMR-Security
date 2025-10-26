@@ -1,0 +1,111 @@
+<!-- file-upload.component.html -->
+<div class="file-upload-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Upload Tài liệu</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="uploadForm">
+        <div class="upload-area">
+          <input
+            type="file"
+            #fileInput
+            (change)="onFileSelected($event)"
+            style="display: none"
+          />
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="fileInput.click()"
+            [disabled]="uploading"
+          >
+            <mat-icon>attach_file</mat-icon>
+            Chọn file
+          </button>
+
+          <span *ngIf="selectedFile" class="file-name">
+            {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
+          </span>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mô tả</mat-label>
+          <textarea matInput formControlName="description" rows="2"></textarea>
+        </mat-form-field>
+
+        <mat-progress-bar
+          *ngIf="uploading"
+          mode="determinate"
+          [value]="uploadProgress"
+        ></mat-progress-bar>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="upload()"
+          [disabled]="!selectedFile || !uploadForm.valid || uploading"
+          class="upload-button"
+        >
+          <mat-icon>cloud_upload</mat-icon>
+          {{ uploading ? 'Đang upload...' : 'Upload' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="documents-list">
+    <mat-card-header>
+      <mat-card-title>Danh sách Tài liệu</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table mat-table [dataSource]="documents" class="mat-elevation-z2">
+        <ng-container matColumnDef="fileName">
+          <th mat-header-cell *matHeaderCellDef>Tên file</th>
+          <td mat-cell *matCellDef="let doc">
+            <mat-icon>{{ getFileIcon(doc.fileType) }}</mat-icon>
+            {{ doc.fileName }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileType">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let doc">{{ doc.fileType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fileSize">
+          <th mat-header-cell *matHeaderCellDef>Kích thước</th>
+          <td mat-cell *matCellDef="let doc">{{ formatFileSize(doc.fileSize) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="uploadedAt">
+          <th mat-header-cell *matHeaderCellDef>Ngày upload</th>
+          <td mat-cell *matCellDef="let doc">{{ doc.uploadedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let doc">
+            <button mat-icon-button (click)="downloadDocument(doc)" matTooltip="Tải xuống">
+              <mat-icon>download</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteDocument(doc)" matTooltip="Xóa">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="documents.length === 0" class="no-data">
+        Chưa có tài liệu nào
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

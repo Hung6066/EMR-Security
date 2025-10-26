@@ -1,0 +1,120 @@
+<!-- anomaly-detection.component.html -->
+<div class="anomaly-container">
+  <h1>Anomaly Detection Dashboard</h1>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="stats">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #f44336;">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.totalAnomalies }}</div>
+          <div class="stat-label">Tổng số Anomalies</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #ff9800;">
+          <mat-icon>priority_high</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.unresolvedAnomalies }}</div>
+          <div class="stat-label">Chưa xử lý</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #2196f3;">
+          <mat-icon>analytics</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ (stats.averageScore * 100).toFixed(1) }}%</div>
+          <div class="stat-label">Điểm TB</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Anomalies Table -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>list</mat-icon>
+        Danh sách Anomalies
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table mat-table [dataSource]="anomalies" class="mat-elevation-z2">
+        
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef>Điểm</th>
+          <td mat-cell *matCellDef="let anomaly">
+            <div class="score-badge" [style.background-color]="getScoreColor(anomaly.score)">
+              {{ (anomaly.score * 100).toFixed(0) }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let anomaly">
+            <div class="type-cell">
+              <mat-icon>{{ getTypeIcon(anomaly.type) }}</mat-icon>
+              {{ anomaly.type }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Mô tả</th>
+          <td mat-cell *matCellDef="let anomaly">{{ anomaly.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="detectedAt">
+          <th mat-header-cell *matHeaderCellDef>Phát hiện</th>
+          <td mat-cell *matCellDef="let anomaly">
+            {{ anomaly.detectedAt | date:'dd/MM/yyyy HH:mm:ss' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef>Người dùng</th>
+          <td mat-cell *matCellDef="let anomaly">
+            {{ anomaly.userName || 'N/A' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+          <td mat-cell *matCellDef="let anomaly">
+            <mat-chip [color]="anomaly.isResolved ? 'primary' : 'warn'" selected>
+              {{ anomaly.isResolved ? 'Đã xử lý' : 'Chưa xử lý' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let anomaly">
+            <button mat-icon-button 
+                    [disabled]="anomaly.isResolved"
+                    (click)="resolveAnomaly(anomaly)"
+                    matTooltip="Đánh dấu đã xử lý">
+              <mat-icon>check</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

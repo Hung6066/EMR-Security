@@ -1,0 +1,41 @@
+/* login-2fa.component.css */
+.login-2fa-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-2fa-card {
+  width: 450px;
+  max-width: 90%;
+}
+
+.login-2fa-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-text {
+  color: #666;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.error-message {
+  color: #f44336;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.alternative-options {
+  text-align: center;
+  margin-top: 20px;
+}

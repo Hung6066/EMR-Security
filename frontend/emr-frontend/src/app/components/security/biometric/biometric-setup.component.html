@@ -1,0 +1,125 @@
+<!-- biometric-setup.component.html -->
+<div class="biometric-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>fingerprint</mat-icon>
+        Xác thực Sinh trắc học
+      </mat-card-title>
+      <mat-card-subtitle>Đăng nhập nhanh và an toàn bằng vân tay hoặc khuôn mặt</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="!isSupported" class="not-supported">
+        <mat-icon color="warn">error</mat-icon>
+        <h3>Trình duyệt không hỗ trợ</h3>
+        <p>Trình duyệt của bạn không hỗ trợ xác thực sinh trắc học.</p>
+        <p>Vui lòng sử dụng Chrome, Firefox, Edge hoặc Safari phiên bản mới.</p>
+      </div>
+
+      <div *ngIf="isSupported">
+        <mat-stepper [linear]="true" [selectedIndex]="currentStep - 1">
+          <!-- Step 1: Introduction -->
+          <mat-step>
+            <ng-template matStepLabel>Giới thiệu</ng-template>
+            <div class="step-content">
+              <h3>Xác thực sinh trắc học là gì?</h3>
+              <p>
+                Xác thực sinh trắc học cho phép bạn đăng nhập bằng vân tay, khuôn mặt 
+                hoặc các phương thức sinh trắc học khác được hỗ trợ bởi thiết bị của bạn.
+              </p>
+
+              <div class="benefits">
+                <h4>Lợi ích:</h4>
+                <ul>
+                  <li>
+                    <mat-icon>check_circle</mat-icon>
+                    Đăng nhập nhanh chóng, không cần nhớ mật khẩu
+                  </li>
+                  <li>
+                    <mat-icon>check_circle</mat-icon>
+                    Bảo mật cao hơn so với mật khẩu thông thường
+                  </li>
+                  <li>
+                    <mat-icon>check_circle</mat-icon>
+                    Chống lại các cuộc tấn công phishing
+                  </li>
+                  <li>
+                    <mat-icon>check_circle</mat-icon>
+                    Dữ liệu sinh trắc học không rời khỏi thiết bị của bạn
+                  </li>
+                </ul>
+              </div>
+
+              <button mat-raised-button color="primary" 
+                      (click)="registerBiometric()" 
+                      [disabled]="loading">
+                Bắt đầu thiết lập
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 2: Registration -->
+          <mat-step>
+            <ng-template matStepLabel>Đăng ký</ng-template>
+            <div class="step-content">
+              <div class="registration-progress">
+                <mat-spinner></mat-spinner>
+                <h3>Đang thiết lập xác thực sinh trắc học...</h3>
+                <p>Vui lòng làm theo hướng dẫn trên thiết bị của bạn.</p>
+                
+                <div class="instructions">
+                  <p>Bạn có thể được yêu cầu:</p>
+                  <ul>
+                    <li>Chạm vân tay vào cảm biến</li>
+                    <li>Nhìn vào camera để quét khuôn mặt</li>
+                    <li>Nhập PIN của thiết bị</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Success -->
+          <mat-step>
+            <ng-template matStepLabel>Hoàn tất</ng-template>
+            <div class="step-content">
+              <div class="success-message">
+                <mat-icon color="primary">check_circle</mat-icon>
+                <h3>Thiết lập thành công!</h3>
+                <p>Bạn có thể đăng nhập bằng sinh trắc học từ thiết bị này.</p>
+              </div>
+
+              <button mat-raised-button color="primary" (click)="finish()">
+                Hoàn tất
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+
+      <!-- Registered Devices -->
+      <div *ngIf="credentials.length > 0" class="registered-devices">
+        <h3>Thiết bị đã đăng ký</h3>
+        <mat-list>
+          <mat-list-item *ngFor="let credential of credentials">
+            <mat-icon matListIcon>devices</mat-icon>
+            <div matLine>{{ credential.deviceName }}</div>
+            <div matLine class="secondary">
+              Đăng ký: {{ credential.createdAt | date:'dd/MM/yyyy HH:mm' }}
+              <span *ngIf="credential.lastUsedAt">
+                | Sử dụng lần cuối: {{ credential.lastUsedAt | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+            <button mat-icon-button 
+                    color="warn" 
+                    (click)="revokeCredential(credential)"
+                    matTooltip="Xóa thiết bị">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

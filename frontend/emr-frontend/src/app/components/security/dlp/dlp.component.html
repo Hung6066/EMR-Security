@@ -1,0 +1,79 @@
+<div class="container">
+  <h1>Data Leakage Prevention (DLP)</h1>
+  <mat-tab-group animationDuration="0ms">
+    <mat-tab label="DLP Incidents">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Sự cố rò rỉ dữ liệu</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="incidentFilterForm" (ngSubmit)="loadIncidents()" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Khoảng thời gian</mat-label>
+                <mat-date-range-input [formGroup]="incidentFilterForm.get('range')!" [rangePicker]="picker">
+                  <input matStartDate formControlName="from" placeholder="Từ ngày">
+                  <input matEndDate formControlName="to" placeholder="Đến ngày">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+              <button mat-raised-button color="primary" type="submit">Lọc</button>
+            </form>
+            <table mat-table [dataSource]="incidents" class="mat-elevation-z2">
+              <!-- Columns Definition -->
+              <ng-container matColumnDef="detectedAt"><th mat-header-cell *matHeaderCellDef>Thời gian</th><td mat-cell *matCellDef="let e">{{ e.detectedAt | date:'dd/MM HH:mm' }}</td></ng-container>
+              <ng-container matColumnDef="userName"><th mat-header-cell *matHeaderCellDef>Người dùng</th><td mat-cell *matCellDef="let e">{{ e.user.userName }}</td></ng-container>
+              <ng-container matColumnDef="channel"><th mat-header-cell *matHeaderCellDef>Kênh</th><td mat-cell *matCellDef="let e">{{ e.channel }}</td></ng-container>
+              <ng-container matColumnDef="ruleName"><th mat-header-cell *matHeaderCellDef>Luật vi phạm</th><td mat-cell *matCellDef="let e">{{ e.rule.name }}</td></ng-container>
+              <ng-container matColumnDef="actionTaken"><th mat-header-cell *matHeaderCellDef>Hành động</th><td mat-cell *matCellDef="let e"><mat-chip color="accent" selected>{{ e.actionTaken }}</mat-chip></td></ng-container>
+              <ng-container matColumnDef="context"><th mat-header-cell *matHeaderCellDef>Context</th><td mat-cell *matCellDef="let e"><code>{{ e.context }}</code></td></ng-container>
+              <tr mat-header-row *matHeaderRowDef="incidentDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: incidentDisplayedColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+    <mat-tab label="DLP Rules">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header><mat-card-title>Quản lý Luật DLP</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <table mat-table [dataSource]="rules" class="mat-elevation-z2">
+              <!-- Columns -->
+              <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef>Tên</th><td mat-cell *matCellDef="let r"><strong>{{ r.name }}</strong><div>{{ r.description }}</div></td></ng-container>
+              <ng-container matColumnDef="dataType"><th mat-header-cell *matHeaderCellDef>Loại Data</th><td mat-cell *matCellDef="let r"><mat-chip>{{ r.dataType }}</mat-chip></td></ng-container>
+              <ng-container matColumnDef="severity"><th mat-header-cell *matHeaderCellDef>Mức độ</th><td mat-cell *matCellDef="let r"><mat-chip [color]="getSeverityColor(r.severity)" selected>{{ r.severity }}</mat-chip></td></ng-container>
+              <ng-container matColumnDef="action"><th mat-header-cell *matHeaderCellDef>Hành động</th><td mat-cell *matCellDef="let r"><mat-chip color="accent" selected>{{ r.action }}</mat-chip></td></ng-container>
+              <ng-container matColumnDef="isActive"><th mat-header-cell *matHeaderCellDef>Trạng thái</th><td mat-cell *matCellDef="let r"><mat-slide-toggle [checked]="r.isActive"></mat-slide-toggle></td></ng-container>
+              <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let r"><button mat-icon-button (click)="editRule(r)"><mat-icon>edit</mat-icon></button></td></ng-container>
+              <tr mat-header-row *matHeaderRowDef="ruleDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: ruleDisplayedColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="!editingRule" class="form-card">
+          <mat-card-header><mat-card-title>Tạo Rule mới</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="ruleForm" (ngSubmit)="saveRule()">
+              <!-- Form Fields cho Rule -->
+            </form>
+          </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="editingRule" class="form-card">
+          <mat-card-header><mat-card-title>Sửa Rule: {{ editingRule.name }}</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="ruleForm" (ngSubmit)="saveRule()">
+              <!-- Form Fields cho Rule -->
+              <mat-card-actions align="end">
+                <button mat-button type="button" (click)="cancelEdit()">Hủy</button>
+                <button mat-raised-button color="primary" type="submit">Lưu</button>
+              </mat-card-actions>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,139 @@
+/* blockchain-explorer.component.css */
+.blockchain-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px !important;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.stat-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 13px;
+}
+
+.actions-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.blockchain-visualization {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.block-node {
+  width: 100%;
+  max-width: 400px;
+  margin: 10px 0;
+}
+
+.block-node mat-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: white;
+}
+
+.block-node mat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.block-node.invalid-block mat-card {
+  border: 2px solid #f44336;
+}
+
+.block-info div {
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+.block-connector {
+  text-align: center;
+  color: white;
+  margin: -5px 0;
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.block-row {
+  cursor: pointer;
+}
+
+.block-row:hover {
+  background-color: #f5f5f5;
+}
+
+.hash-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+code {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #999;
+}

@@ -1,0 +1,127 @@
+<!-- incident-detail-dialog.component.html -->
+<div class="incident-detail-dialog">
+  <h2 mat-dialog-title [ngClass]="getSeverityClass()">
+    <mat-icon>security</mat-icon>
+    {{ incident.title }}
+  </h2>
+
+  <mat-dialog-content>
+    <div class="incident-info">
+      <!-- Header Info -->
+      <div class="info-grid">
+        <div class="info-item">
+          <label>ID:</label>
+          <span>#{{ incident.id }}</span>
+        </div>
+        <div class="info-item">
+          <label>Mức độ:</label>
+          <mat-chip [ngClass]="getSeverityClass()">{{ incident.severity }}</mat-chip>
+        </div>
+        <div class="info-item">
+          <label>Loại:</label>
+          <mat-chip>{{ incident.category }}</mat-chip>
+        </div>
+        <div class="info-item">
+          <label>Trạng thái:</label>
+          <mat-chip color="accent" selected>{{ incident.status }}</mat-chip>
+        </div>
+        <div class="info-item">
+          <label>Phát hiện:</label>
+          <span>{{ incident.detectedAt | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+        </div>
+        <div class="info-item" *ngIf="incident.assignedToUserName">
+          <label>Người xử lý:</label>
+          <span>{{ incident.assignedToUserName }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Description -->
+      <div class="section">
+        <h3>Mô tả</h3>
+        <p>{{ incident.description }}</p>
+      </div>
+
+      <!-- Affected Resources -->
+      <div class="section" *ngIf="incident.affectedResource || incident.ipAddress">
+        <h3>Tài nguyên ảnh hưởng</h3>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="incident.affectedResource">
+            <label>Tài nguyên:</label>
+            <code>{{ incident.affectedResource }}</code>
+          </div>
+          <div class="info-item" *ngIf="incident.ipAddress">
+            <label>IP Address:</label>
+            <code>{{ incident.ipAddress }}</code>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Timeline -->
+      <div class="section">
+        <h3>Timeline & Actions</h3>
+        <mat-list class="timeline">
+          <mat-list-item *ngFor="let action of incident.actions">
+            <mat-icon matListIcon [color]="action.result === 'Success' ? 'primary' : 'warn'">
+              {{ getTimelineIcon(action) }}
+            </mat-icon>
+            <div matLine>
+              <strong>{{ action.actionType }}</strong>
+              <span class="time">{{ action.performedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div matLine class="action-description">{{ action.description }}</div>
+            <div matLine class="action-by">By: {{ action.performedByUserName }}</div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Comments -->
+      <div class="section">
+        <h3>Comments ({{ incident.comments?.length || 0 }})</h3>
+        
+        <div class="comments-list">
+          <mat-card *ngFor="let comment of incident.comments" class="comment-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>person</mat-icon>
+              <mat-card-title>{{ comment.userName }}</mat-card-title>
+              <mat-card-subtitle>{{ comment.createdAt | date:'dd/MM/yyyy HH:mm' }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              {{ comment.comment }}
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="add-comment">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Thêm comment</mat-label>
+            <textarea matInput [formControl]="commentControl" rows="3"></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="addComment()" [disabled]="!commentControl.value?.trim()">
+            <mat-icon>send</mat-icon>
+            Gửi
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Đóng</button>
+    
+    <button mat-button [matMenuTriggerFor]="statusMenu">
+      <mat-icon>update</mat-icon>
+      Cập nhật trạng thái
+    </button>
+    <mat-menu #statusMenu="matMenu">
+      <button mat-menu-item *ngFor="let status of statuses" (click)="updateStatus(status)">
+        {{ status }}
+      </button>
+    </mat-menu>
+  </mat-dialog-actions>
+</div>

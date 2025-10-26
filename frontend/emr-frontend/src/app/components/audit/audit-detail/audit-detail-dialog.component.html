@@ -1,0 +1,107 @@
+<!-- audit-detail-dialog.component.html -->
+<h2 mat-dialog-title>Chi tiết Nhật ký Kiểm toán</h2>
+
+<mat-dialog-content>
+  <div class="detail-section">
+    <h3>Thông tin chung</h3>
+    <mat-list>
+      <mat-list-item>
+        <strong>Thời gian:</strong>
+        <span>{{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>Người dùng:</strong>
+        <span>{{ log.userName }} (ID: {{ log.userId }})</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>Hành động:</strong>
+        <span>{{ log.action }}</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>Đối tượng:</strong>
+        <span>{{ log.entityType }} (ID: {{ log.entityId }})</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>IP Address:</strong>
+        <span>{{ log.ipAddress }}</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>User Agent:</strong>
+        <span>{{ log.userAgent }}</span>
+      </mat-list-item>
+      <mat-list-item>
+        <strong>Trạng thái:</strong>
+        <mat-icon [color]="log.isSuccess ? 'primary' : 'warn'">
+          {{ log.isSuccess ? 'check_circle' : 'error' }}
+        </mat-icon>
+        <span>{{ log.isSuccess ? 'Thành công' : 'Thất bại' }}</span>
+      </mat-list-item>
+      <mat-list-item *ngIf="!log.isSuccess">
+        <strong>Lý do thất bại:</strong>
+        <span>{{ log.failureReason }}</span>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Changes Summary for UPDATE action -->
+  <div class="detail-section" *ngIf="log.action === 'UPDATE'">
+    <h3>Thay đổi</h3>
+    <table mat-table [dataSource]="getDifferences()" class="changes-table">
+      <ng-container matColumnDef="field">
+        <th mat-header-cell *matHeaderCellDef>Trường</th>
+        <td mat-cell *matCellDef="let diff">{{ diff.field }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="oldValue">
+        <th mat-header-cell *matHeaderCellDef>Giá trị cũ</th>
+        <td mat-cell *matCellDef="let diff">
+          <code>{{ diff.oldValue }}</code>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="newValue">
+        <th mat-header-cell *matHeaderCellDef>Giá trị mới</th>
+        <td mat-cell *matCellDef="let diff">
+          <code>{{ diff.newValue }}</code>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['field', 'oldValue', 'newValue']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['field', 'oldValue', 'newValue'];"></tr>
+    </table>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Raw Data -->
+  <div class="detail-section">
+    <mat-accordion>
+      <mat-expansion-panel *ngIf="log.oldValues">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Dữ liệu cũ (JSON)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <pre><code>{{ oldValuesJson }}</code></pre>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="log.newValues">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Dữ liệu mới (JSON)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <pre><code>{{ newValuesJson }}</code></pre>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="log.additionalInfo">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Thông tin bổ sung</mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>{{ log.additionalInfo }}</p>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Đóng</button>
+</mat-dialog-actions>

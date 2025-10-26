@@ -1,0 +1,64 @@
+<!-- create-api-key-dialog.component.html -->
+<h2 mat-dialog-title>Tạo API Key mới</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="apiKeyForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên API Key</mat-label>
+      <input matInput formControlName="name" placeholder="Production API, Mobile App...">
+      <mat-error *ngIf="apiKeyForm.get('name')?.hasError('required')">
+        Tên là bắt buộc
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ngày hết hạn (tùy chọn)</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="expiresAt">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-hint>Để trống nếu không giới hạn thời gian</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>IP Whitelist (tùy chọn)</mat-label>
+      <textarea matInput formControlName="ipWhitelist" rows="2"
+                placeholder="192.168.1.1, 10.0.0.0/8"></textarea>
+      <mat-hint>Danh sách IP được phép sử dụng (cách nhau bởi dấu phẩy)</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Giới hạn request/phút</mat-label>
+      <input matInput type="number" formControlName="rateLimitPerMinute">
+      <mat-error *ngIf="apiKeyForm.get('rateLimitPerMinute')?.hasError('min')">
+        Tối thiểu 1
+      </mat-error>
+      <mat-error *ngIf="apiKeyForm.get('rateLimitPerMinute')?.hasError('max')">
+        Tối đa 1000
+      </mat-error>
+    </mat-form-field>
+
+    <div class="scopes-section">
+      <label>Quyền truy cập:</label>
+      <mat-selection-list formControlName="scopes">
+        <mat-list-option *ngFor="let scope of availableScopes" [value]="scope.value">
+          {{ scope.label }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      <mat-icon>error</mat-icon>
+      {{ error }}
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Hủy</button>
+  <button mat-raised-button color="primary" 
+          (click)="onSubmit()" 
+          [disabled]="!apiKeyForm.valid || loading">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">Tạo API Key</span>
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,63 @@
+<div class="container">
+  <h1>File Integrity Monitoring (FIM)</h1>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Giám sát thay đổi file hệ thống</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="toolbar">
+        <button mat-raised-button color="primary" (click)="scan()" [disabled]="scanning">
+          <mat-icon>search</mat-icon> {{ scanning ? 'Đang quét...' : 'Quét ngay' }}
+        </button>
+        <button mat-raised-button color="accent" (click)="createBaseline()">
+          <mat-icon>refresh</mat-icon> Tạo lại Baseline
+        </button>
+      </div>
+
+      <div *ngIf="loading" class="loading-spinner"><mat-spinner></mat-spinner></div>
+
+      <table *ngIf="!loading" mat-table [dataSource]="records" class="mat-elevation-z2">
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
+          <td mat-cell *matCellDef="let record">
+            <mat-chip [color]="getStatusColor(record.status)" selected>
+              <mat-icon>{{ getStatusIcon(record.status) }}</mat-icon>
+              {{ record.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <!-- FilePath Column -->
+        <ng-container matColumnDef="filePath">
+          <th mat-header-cell *matHeaderCellDef> Đường dẫn file </th>
+          <td mat-cell *matCellDef="let record"><code>{{ record.filePath }}</code></td>
+        </ng-container>
+        <!-- Hash Column -->
+        <ng-container matColumnDef="hash">
+          <th mat-header-cell *matHeaderCellDef> Hash (SHA256) </th>
+          <td mat-cell *matCellDef="let record"><code>{{ record.hash.substring(0, 16) }}...</code></td>
+        </ng-container>
+        <!-- LastChecked Column -->
+        <ng-container matColumnDef="lastChecked">
+          <th mat-header-cell *matHeaderCellDef> Kiểm tra lần cuối </th>
+          <td mat-cell *matCellDef="let record">{{ record.lastChecked | date:'dd/MM/yy HH:mm:ss' }}</td>
+        </ng-container>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Hành động </th>
+          <td mat-cell *matCellDef="let record">
+            <button mat-icon-button 
+                    *ngIf="record.status !== 'Baseline' && record.status !== 'Acknowledged'"
+                    (click)="acknowledge(record)" 
+                    matTooltip="Acknowledge this change">
+              <mat-icon>check</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

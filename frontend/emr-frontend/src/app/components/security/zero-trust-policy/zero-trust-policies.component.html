@@ -1,0 +1,101 @@
+<!-- zero-trust-policies.component.html -->
+<div class="policies-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>policy</mat-icon>
+        Zero Trust Access Policies
+      </mat-card-title>
+      <mat-card-subtitle>
+        Quản lý chính sách truy cập Zero Trust
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="toolbar">
+        <button mat-raised-button color="primary" (click)="createPolicy()">
+          <mat-icon>add</mat-icon>
+          Tạo Policy mới
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="policies" class="mat-elevation-z2">
+        
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Tên Policy</th>
+          <td mat-cell *matCellDef="let policy">
+            <div>
+              <strong>{{ policy.name }}</strong>
+              <div class="description">{{ policy.description }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resourceType">
+          <th mat-header-cell *matHeaderCellDef>Loại tài nguyên</th>
+          <td mat-cell *matCellDef="let policy">
+            <mat-chip>{{ policy.resourceType }}</mat-chip>
+            <div class="resource-path">{{ policy.resourcePath }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="minTrustScore">
+          <th mat-header-cell *matHeaderCellDef>Điểm tối thiểu</th>
+          <td mat-cell *matCellDef="let policy">
+            <div class="trust-score-badge" 
+                 [class.high]="policy.minTrustScore >= 80"
+                 [class.medium]="policy.minTrustScore >= 50 && policy.minTrustScore < 80"
+                 [class.low]="policy.minTrustScore < 50">
+              {{ policy.minTrustScore }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="requirements">
+          <th mat-header-cell *matHeaderCellDef>Yêu cầu</th>
+          <td mat-cell *matCellDef="let policy">
+            <mat-chip-list>
+              <mat-chip *ngFor="let req of getRequirements(policy)" 
+                        color="accent" 
+                        selected>
+                {{ req }}
+              </mat-chip>
+            </mat-chip-list>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+          <td mat-cell *matCellDef="let policy">
+            <mat-slide-toggle 
+              [checked]="policy.isActive"
+              (change)="togglePolicy(policy)"
+              color="primary">
+              {{ policy.isActive ? 'Active' : 'Inactive' }}
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let policy">
+            <button mat-icon-button (click)="editPolicy(policy)" matTooltip="Sửa">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deletePolicy(policy)" matTooltip="Xóa">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="policies.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>Chưa có policy nào. Nhấn "Tạo Policy mới" để bắt đầu.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

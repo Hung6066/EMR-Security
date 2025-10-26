@@ -1,0 +1,73 @@
+<!-- appointment-calendar.component.html -->
+<div class="calendar-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Lịch Hẹn Khám</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="calendar-controls">
+        <button mat-icon-button (click)="previousMonth()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+        <h2>{{ getMonthYear() }}</h2>
+        
+        <button mat-icon-button (click)="nextMonth()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        
+        <button mat-raised-button (click)="today()">Hôm nay</button>
+        
+        <button mat-raised-button color="primary" (click)="openAppointmentDialog()">
+          <mat-icon>add</mat-icon>
+          Đặt lịch mới
+        </button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="calendar-header">
+          <div class="day-name">CN</div>
+          <div class="day-name">T2</div>
+          <div class="day-name">T3</div>
+          <div class="day-name">T4</div>
+          <div class="day-name">T5</div>
+          <div class="day-name">T6</div>
+          <div class="day-name">T7</div>
+        </div>
+
+        <div class="calendar-body">
+          <div
+            *ngFor="let day of calendarDays"
+            class="calendar-day"
+            [class.today]="isToday(day)"
+            [class.other-month]="!isCurrentMonth(day)"
+            (click)="openAppointmentDialog(day)"
+          >
+            <div class="day-number">{{ day.getDate() }}</div>
+            
+            <div class="appointments">
+              <div
+                *ngFor="let apt of getAppointmentsForDay(day)"
+                class="appointment-item"
+                [style.background-color]="statusColors[apt.status]"
+                (click)="viewAppointment(apt); $event.stopPropagation()"
+                matTooltip="{{ apt.appointmentTime }} - {{ apt.patientName }}"
+              >
+                <span class="time">{{ apt.appointmentTime }}</span>
+                <span class="patient">{{ apt.patientName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item" *ngFor="let status of ['Pending', 'Confirmed', 'Completed', 'Cancelled']">
+          <div class="legend-color" [style.background-color]="statusColors[status]"></div>
+          <span>{{ status }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

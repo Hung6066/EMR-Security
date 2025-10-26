@@ -1,0 +1,89 @@
+/* security-incidents.component.css */
+.incidents-container {
+  padding: 20px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+}
+
+table {
+  width: 100%;
+}
+
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+}
+
+.severity-badge.critical {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.severity-badge.high {
+  background-color: #f57c00;
+  color: white;
+}
+
+.severity-badge.medium {
+  background-color: #fbc02d;
+  color: #333;
+}
+
+.severity-badge.low {
+  background-color: #388e3c;
+  color: white;
+}
+
+.severity-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.incident-title strong {
+  display: block;
+}
+
+.incident-id {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.unassigned {
+  color: #999;
+  font-style: italic;
+}
+
+.incident-row {
+  cursor: pointer;
+}
+
+.incident-row:hover {
+  background-color: #f5f5f5;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+}

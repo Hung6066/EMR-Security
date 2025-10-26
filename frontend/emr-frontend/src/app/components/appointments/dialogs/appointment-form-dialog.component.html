@@ -1,0 +1,105 @@
+<!-- appointment-form-dialog.component.html -->
+<h2 mat-dialog-title>{{ isEditMode ? 'Chi tiết Lịch hẹn' : 'Đặt Lịch hẹn mới' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="appointmentForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bệnh nhân</mat-label>
+      <mat-select formControlName="patientId" [disabled]="isEditMode">
+        <mat-option *ngFor="let patient of patients" [value]="patient.id">
+          {{ patient.fullName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Bác sĩ</mat-label>
+      <mat-select formControlName="doctorId" [disabled]="isEditMode">
+        <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+          {{ doctor.fullName }} - {{ doctor.specialty }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Ngày hẹn</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="appointmentDate"
+          [disabled]="isEditMode"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Giờ hẹn</mat-label>
+        <mat-select
+          formControlName="appointmentTime"
+          (selectionChange)="checkAvailability()"
+          [disabled]="isEditMode"
+        >
+          <mat-option *ngFor="let time of timeSlots" [value]="time">
+            {{ time.substring(0, 5) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Thời gian (phút)</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="durationMinutes"
+          [disabled]="isEditMode"
+        />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Lý do khám</mat-label>
+      <textarea
+        matInput
+        formControlName="reason"
+        rows="2"
+        [readonly]="isEditMode"
+      ></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="isEditMode">
+      <mat-label>Trạng thái</mat-label>
+      <mat-select formControlName="status">
+        <mat-option *ngFor="let status of statuses" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Hủy</button>
+  <button
+    mat-button
+    color="warn"
+    *ngIf="isEditMode && data.appointment.status !== 'Cancelled'"
+    (click)="cancelAppointment()"
+  >
+    Hủy lịch hẹn
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="save()"
+    [disabled]="!appointmentForm.valid"
+  >
+    {{ isEditMode ? 'Cập nhật' : 'Đặt lịch' }}
+  </button>
+</mat-dialog-actions>

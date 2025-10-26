@@ -1,0 +1,59 @@
+<!-- security-monitor.component.html -->
+<mat-card class="security-monitor">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>security</mat-icon>
+      Giám sát An ninh
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="metrics-grid">
+      <div class="metric-item">
+        <div class="metric-icon">
+          <mat-icon color="primary">people</mat-icon>
+        </div>
+        <div class="metric-value">{{ metrics.activeUsers }}</div>
+        <div class="metric-label">Người dùng hoạt động</div>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-icon">
+          <mat-icon color="warn">error</mat-icon>
+        </div>
+        <div class="metric-value">{{ metrics.failedLogins }}</div>
+        <div class="metric-label">Đăng nhập thất bại</div>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-icon">
+          <mat-icon color="accent">warning</mat-icon>
+        </div>
+        <div class="metric-value">{{ metrics.suspiciousActivities }}</div>
+        <div class="metric-label">Hoạt động đáng ngờ</div>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-icon">
+          <mat-icon color="warn">block</mat-icon>
+        </div>
+        <div class="metric-value">{{ metrics.blockedIPs }}</div>
+        <div class="metric-label">IP bị chặn</div>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="risk-score">
+      <div class="risk-label">Điểm rủi ro trung bình:</div>
+      <mat-chip [color]="getRiskColor()" selected>
+        {{ getRiskLevel() }} ({{ metrics.avgRiskScore }})
+      </mat-chip>
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="metrics.avgRiskScore"
+        [color]="getRiskColor()">
+      </mat-progress-bar>
+    </div>
+  </mat-card-content>
+</mat-card>

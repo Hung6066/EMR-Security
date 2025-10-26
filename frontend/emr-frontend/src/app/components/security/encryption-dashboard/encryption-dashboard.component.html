@@ -1,0 +1,195 @@
+<!-- encryption-dashboard.component.html -->
+<div class="encryption-container">
+  <h1>Encryption & Key Management</h1>
+
+  <!-- Metrics Cards -->
+  <div class="metrics-grid" *ngIf="metrics">
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-icon" style="background-color: #2196f3;">
+          <mat-icon>vpn_key</mat-icon>
+        </div>
+        <div class="metric-info">
+          <div class="metric-value">{{ metrics.totalKeys }}</div>
+          <div class="metric-label">Tổng số khóa</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-icon" style="background-color: #4caf50;">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="metric-info">
+          <div class="metric-value">{{ metrics.activeKeys }}</div>
+          <div class="metric-label">Khóa hoạt động</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-icon" style="background-color: #ff9800;">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="metric-info">
+          <div class="metric-value">{{ metrics.expiringSoonKeys }}</div>
+          <div class="metric-label">Sắp hết hạn</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-icon" style="background-color: #9c27b0;">
+          <mat-icon>autorenew</mat-icon>
+        </div>
+        <div class="metric-info">
+          <div class="metric-value">{{ metrics.rotatedKeys }}</div>
+          <div class="metric-label">Đã xoay vòng</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+    <!-- Encryption Keys Tab -->
+    <mat-tab label="Encryption Keys">
+      <div class="tab-content">
+        <div class="toolbar">
+          <button mat-raised-button color="primary" (click)="createKey()">
+            <mat-icon>add</mat-icon>
+            Tạo khóa mới
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="keys" class="mat-elevation-z2">
+          
+          <ng-container matColumnDef="keyName">
+            <th mat-header-cell *matHeaderCellDef>Tên khóa</th>
+            <td mat-cell *matCellDef="let key">{{ key.keyName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="keyType">
+            <th mat-header-cell *matHeaderCellDef>Loại</th>
+            <td mat-cell *matCellDef="let key">
+              <mat-chip>{{ key.keyType }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="purpose">
+            <th mat-header-cell *matHeaderCellDef>Mục đích</th>
+            <td mat-cell *matCellDef="let key">{{ key.purpose }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="keySize">
+            <th mat-header-cell *matHeaderCellDef>Kích thước</th>
+            <td mat-cell *matCellDef="let key">{{ key.keySize }} bits</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+            <td mat-cell *matCellDef="let key">
+              <mat-chip [color]="getStatusColor(key)" [selected]="key.isActive">
+                {{ getKeyStatus(key) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="expiresAt">
+            <th mat-header-cell *matHeaderCellDef>Hết hạn</th>
+            <td mat-cell *matCellDef="let key">
+              <div [class.expiring-soon]="isExpiringSoon(key)">
+                {{ key.expiresAt | date:'dd/MM/yyyy' }}
+                <div class="days-until" *ngIf="getDaysUntilExpiry(key.expiresAt) >= 0">
+                  ({{ getDaysUntilExpiry(key.expiresAt) }} ngày)
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let key">
+              <button mat-icon-button 
+                      [disabled]="key.isRotated || !key.isActive"
+                      (click)="rotateKey(key)"
+                      matTooltip="Xoay vòng khóa">
+                <mat-icon>autorenew</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsKeys"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsKeys;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- Secure Vault Tab -->
+    <mat-tab label="Secure Vault">
+      <div class="tab-content">
+        <div class="toolbar">
+          <button mat-raised-button color="primary" (click)="storeInVault()">
+            <mat-icon>add</mat-icon>
+            Lưu vào Vault
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="vaultEntries" class="mat-elevation-z2">
+          
+          <ng-container matColumnDef="keyName">
+            <th mat-header-cell *matHeaderCellDef>Tên</th>
+            <td mat-cell *matCellDef="let entry">
+              <div class="vault-key-name">
+                <mat-icon>lock</mat-icon>
+                {{ entry.keyName }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Mô tả</th>
+            <td mat-cell *matCellDef="let entry">{{ entry.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Ngày tạo</th>
+            <td mat-cell *matCellDef="let entry">
+              {{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="expiresAt">
+            <th mat-header-cell *matHeaderCellDef>Hết hạn</th>
+            <td mat-cell *matCellDef="let entry">
+              {{ entry.expiresAt ? (entry.expiresAt | date:'dd/MM/yyyy') : 'Không giới hạn' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let entry">
+              <button mat-icon-button (click)="viewVaultEntry(entry)" matTooltip="Xem">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteVaultEntry(entry)" matTooltip="Xóa">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsVault"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsVault;"></tr>
+        </table>
+
+        <div *ngIf="vaultEntries.length === 0" class="no-data">
+          <mat-icon>info</mat-icon>
+          <p>Vault trống. Lưu dữ liệu nhạy cảm vào vault.</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,16 @@
+.container { padding: 20px; max-width: 900px; margin: auto; }
+mat-card-title { display: flex; align-items: center; gap: 10px; }
+.alert { padding: 15px; border-radius: 4px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.alert.warn { background-color: #fff3e0; color: #f57c00; }
+.stepper { box-shadow: none; border: 1px solid #eee; }
+.step-content { padding: 24px; min-height: 250px; }
+.benefits ul { list-style: none; padding: 0; margin-top: 20px; }
+.benefits li { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+.registration-progress, .success-message { text-align: center; padding: 40px; }
+.registration-progress mat-spinner { margin: 0 auto 20px auto; }
+.instructions { margin-top: 30px; padding: 20px; background-color: #f5f5f5; border-radius: 8px; text-align: left; }
+.success-icon { font-size: 64px; width: 64px; height: 64px; }
+.registered-devices { margin-top: 40px; }
+.registered-devices h3 { margin-bottom: 15px; }
+.registered-devices table { width: 100%; }
+.registered-devices td mat-icon { vertical-align: middle; margin-right: 8px; }

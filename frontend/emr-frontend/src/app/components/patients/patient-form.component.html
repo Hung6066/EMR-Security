@@ -1,0 +1,88 @@
+<!-- patient-form.component.html -->
+<div class="container">
+  <h2>{{ isEditMode ? 'Sửa thông tin' : 'Thêm mới' }} Bệnh nhân</h2>
+  
+  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
+    <mat-card>
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Họ và tên</mat-label>
+            <input matInput formControlName="fullName" required>
+            <mat-error *ngIf="patientForm.get('fullName')?.hasError('required')">
+              Vui lòng nhập họ tên
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ngày sinh</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Giới tính</mat-label>
+            <mat-select formControlName="gender" required>
+              <mat-option *ngFor="let gender of genders" [value]="gender">
+                {{gender}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>CMND/CCCD</mat-label>
+            <input matInput formControlName="identityCard">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Số điện thoại</mat-label>
+            <input matInput formControlName="phoneNumber">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+            <mat-error *ngIf="patientForm.get('email')?.hasError('email')">
+              Email không hợp lệ
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Địa chỉ</mat-label>
+          <textarea matInput formControlName="address" rows="2"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Nhóm máu</mat-label>
+            <mat-select formControlName="bloodType">
+              <mat-option *ngFor="let type of bloodTypes" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Dị ứng</mat-label>
+          <textarea matInput formControlName="allergies" rows="3" 
+                    placeholder="Ghi chú các chất gây dị ứng"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button type="button" (click)="cancel()">Hủy</button>
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="!patientForm.valid">
+          {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

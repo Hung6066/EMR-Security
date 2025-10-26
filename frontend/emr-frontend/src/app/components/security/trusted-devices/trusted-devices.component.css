@@ -1,0 +1,12 @@
+.container { padding: 20px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+table { width: 100%; }
+.loading-spinner { display: flex; justify-content: center; padding: 50px; }
+.device-cell { display: flex; align-items: center; gap: 10px; }
+.device-cell mat-icon { color: #666; }
+.device-cell span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}

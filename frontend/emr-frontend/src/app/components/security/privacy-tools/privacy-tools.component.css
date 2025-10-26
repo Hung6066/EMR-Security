@@ -1,0 +1,76 @@
+/* privacy-tools.component.css */
+.privacy-tools-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tab-content {
+  padding: 30px 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+}
+
+.result-card {
+  margin-top: 30px;
+  background-color: #f5f5f5;
+}
+
+.result-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.token-result,
+.synthetic-result,
+.anonymized-result {
+  padding: 20px;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.result-row label {
+  font-weight: 500;
+  min-width: 120px;
+}
+
+code {
+  background-color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  border: 1px solid #ddd;
+}
+
+code.token {
+  color: #1976d2;
+  font-weight: bold;
+}
+
+.preview {
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.preview pre {
+  margin: 0;
+  font-size: 13px;
+}

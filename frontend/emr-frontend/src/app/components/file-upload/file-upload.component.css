@@ -1,0 +1,40 @@
+/* file-upload.component.css */
+.file-upload-container {
+  padding: 20px;
+}
+
+.upload-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.file-name {
+  color: #666;
+  font-size: 14px;
+}
+
+.upload-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.documents-list {
+  margin-top: 20px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+table {
+  width: 100%;
+}
+
+mat-icon {
+  vertical-align: middle;
+  margin-right: 5px;
+}

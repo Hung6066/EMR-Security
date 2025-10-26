@@ -1,0 +1,11 @@
+dotnet add package QuestPDF
+
+dotnet add package GoogleAuthenticator
+dotnet add package QRCoder
+dotnet add package Twilio
+dotnet add package AspNetCoreRateLimit
+dotnet add package reCAPTCHA.AspNetCore
+dotnet add package Fido2.NetFramework
+dotnet add package Fido2
+dotnet add EMRSystem.API package Hangfire.AspNetCore
+dotnet add EMRSystem.API package Hangfire.SqlServer

@@ -1,0 +1,104 @@
+<!-- medical-record-form.component.html -->
+<div class="container">
+  <h2>Tạo Bệnh án mới</h2>
+  
+  <form [formGroup]="recordForm" (ngSubmit)="onSubmit()">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Thông tin khám bệnh</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Bác sĩ khám</mat-label>
+            <input matInput formControlName="doctorId" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ngày khám</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="visitDate" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Lý do khám</mat-label>
+          <textarea matInput formControlName="chiefComplaint" rows="2" required></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Bệnh sử</mat-label>
+          <textarea matInput formControlName="presentIllness" rows="3"></textarea>
+        </mat-form-field>
+
+        <!-- Vital Signs -->
+        <div formGroupName="vitalSigns">
+          <h3>Sinh hiệu</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nhiệt độ (°C)</mat-label>
+              <input matInput type="number" formControlName="temperature" step="0.1">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Huyết áp</mat-label>
+              <input matInput formControlName="bloodPressure" placeholder="120/80">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nhịp tim (bpm)</mat-label>
+              <input matInput type="number" formControlName="heartRate">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nhịp thở (lần/phút)</mat-label>
+              <input matInput type="number" formControlName="respiratoryRate">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cân nặng (kg)</mat-label>
+              <input matInput type="number" formControlName="weight" step="0.1">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Chiều cao (cm)</mat-label>
+              <input matInput type="number" formControlName="height" step="0.1">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Khám lâm sàng</mat-label>
+          <textarea matInput formControlName="physicalExamination" rows="4"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Chẩn đoán</mat-label>
+          <textarea matInput formControlName="diagnosis" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Điều trị</mat-label>
+          <textarea matInput formControlName="treatment" rows="4"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ghi chú</mat-label>
+          <textarea matInput formControlName="notes" rows="3"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button type="button" (click)="cancel()">Hủy</button>
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="!recordForm.valid">
+          Lưu bệnh án
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

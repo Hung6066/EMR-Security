@@ -1,0 +1,69 @@
+<!-- dashboard.component.html -->
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+
+  <div class="stats-grid" *ngIf="stats">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #42A5F5">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.totalPatients }}</div>
+          <div class="stat-label">Tổng Bệnh nhân</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #66BB6A">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.totalAppointmentsToday }}</div>
+          <div class="stat-label">Lịch hẹn Hôm nay</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #FFA726">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.pendingAppointments }}</div>
+          <div class="stat-label">Chờ xác nhận</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background-color: #26C6DA">
+          <mat-icon>person_add</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats.newPatientsThisMonth }}</div>
+          <div class="stat-label">BN mới tháng này</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="quick-actions">
+    <button mat-raised-button color="primary" routerLink="/patients/new">
+      <mat-icon>person_add</mat-icon>
+      Thêm Bệnh nhân
+    </button>
+    <button mat-raised-button color="accent" routerLink="/appointments">
+      <mat-icon>event</mat-icon>
+      Đặt Lịch hẹn
+    </button>
+    <button mat-raised-button routerLink="/medical-records/new">
+      <mat-icon>description</mat-icon>
+      Tạo Bệnh án
+    </button>
+  </div>
+</div>

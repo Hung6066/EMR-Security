@@ -1,0 +1,102 @@
+/* incident-detail-dialog.component.css */
+.incident-detail-dialog {
+  max-height: 80vh;
+}
+
+h2.severity-critical {
+  color: #d32f2f;
+}
+
+h2.severity-high {
+  color: #f57c00;
+}
+
+h2.severity-medium {
+  color: #fbc02d;
+}
+
+h2.severity-low {
+  color: #388e3c;
+}
+
+.incident-info {
+  padding: 20px 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item label {
+  font-weight: 500;
+  color: #666;
+  font-size: 12px;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.section h3 {
+  color: #1976d2;
+  margin-bottom: 15px;
+}
+
+.timeline {
+  padding: 0;
+}
+
+.timeline mat-list-item {
+  margin-bottom: 15px;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 15px;
+}
+
+.time {
+  float: right;
+  font-size: 12px;
+  color: #999;
+}
+
+.action-description {
+  font-size: 13px;
+  color: #666;
+}
+
+.action-by {
+  font-size: 11px;
+  color: #999;
+}
+
+.comments-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.comment-card {
+  margin-bottom: 15px;
+}
+
+.add-comment {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+code {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+}

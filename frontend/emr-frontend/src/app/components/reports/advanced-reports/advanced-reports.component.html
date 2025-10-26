@@ -1,0 +1,82 @@
+<!-- src/app/components/reports/advanced-reports/advanced-reports.component.html -->
+<div class="reports-container">
+  <h1>Advanced Reporting & Analytics</h1>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Tạo Report theo yêu cầu</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="reportForm" (ngSubmit)="exportReport()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Loại Report</mat-label>
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let type of reportTypes" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Định dạng</mat-label>
+            <mat-select formControlName="format">
+              <mat-option *ngFor="let f of formats" [value]="f">{{ f }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div formGroupName="range">
+          <mat-form-field appearance="outline">
+            <mat-label>Khoảng thời gian</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate formControlName="from" placeholder="Từ ngày">
+              <input matEndDate formControlName="to" placeholder="Đến ngày">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="!reportForm.valid || exporting">
+          <mat-spinner *ngIf="exporting" diameter="20"></mat-spinner>
+          <span *ngIf="!exporting">Tạo & Xuất Report</span>
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Kho lưu trữ Reports</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="archive" class="mat-elevation-z2">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Tiêu đề</th>
+          <td mat-cell *matCellDef="let item">{{ item.title }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let item">{{ item.type }}</td>
+        </ng-container>
+        <ng-container matColumnDef="format">
+          <th mat-header-cell *matHeaderCellDef>Định dạng</th>
+          <td mat-cell *matCellDef="let item">{{ item.format }}</td>
+        </ng-container>
+        <ng-container matColumnDef="generatedAt">
+          <th mat-header-cell *matHeaderCellDef>Ngày tạo</th>
+          <td mat-cell *matCellDef="let item">{{ item.generatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Tải xuống</th>
+          <td mat-cell *matCellDef="let item">
+            <button mat-icon-button (click)="download(item)">
+              <mat-icon>file_download</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

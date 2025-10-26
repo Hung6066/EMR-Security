@@ -1,0 +1,150 @@
+<!-- trust-score.component.html -->
+<div class="trust-score-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>verified_user</mat-icon>
+        Điểm Tin cậy (Trust Score)
+      </mat-card-title>
+      <mat-card-subtitle>
+        Đánh giá mức độ tin cậy của phiên hiện tại
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <div *ngIf="!loading && trustScore" class="score-content">
+        <!-- Overall Score -->
+        <div class="overall-score">
+          <div class="score-circle">
+            <svg viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="90" 
+                      fill="none" 
+                      stroke="#e0e0e0" 
+                      stroke-width="20"/>
+              <circle cx="100" cy="100" r="90" 
+                      fill="none" 
+                      [attr.stroke]="getScoreColor(trustScore.overallScore)"
+                      stroke-width="20"
+                      [attr.stroke-dasharray]="565.48"
+                      [attr.stroke-dashoffset]="565.48 - (565.48 * trustScore.overallScore / 100)"
+                      transform="rotate(-90 100 100)"/>
+            </svg>
+            <div class="score-text">
+              <div class="score-number">{{ trustScore.overallScore }}</div>
+              <div class="score-label">{{ getTrustLevel() }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Score Breakdown -->
+        <div class="score-breakdown">
+          <h3>Chi tiết điểm số</h3>
+          
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon>devices</mat-icon>
+              <span>Thiết bị</span>
+              <span class="score-value">{{ trustScore.deviceScore }}/100</span>
+            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="trustScore.deviceScore"
+              [color]="getScoreColor(trustScore.deviceScore)">
+            </mat-progress-bar>
+            <div class="score-detail">{{ trustScore.details.device }}</div>
+          </div>
+
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon>location_on</mat-icon>
+              <span>Vị trí</span>
+              <span class="score-value">{{ trustScore.locationScore }}/100</span>
+            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="trustScore.locationScore"
+              [color]="getScoreColor(trustScore.locationScore)">
+            </mat-progress-bar>
+            <div class="score-detail">{{ trustScore.details.location }}</div>
+          </div>
+
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon>psychology</mat-icon>
+              <span>Hành vi</span>
+              <span class="score-value">{{ trustScore.behaviorScore }}/100</span>
+            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="trustScore.behaviorScore"
+              [color]="getScoreColor(trustScore.behaviorScore)">
+            </mat-progress-bar>
+            <div class="score-detail">{{ trustScore.details.behavior }}</div>
+          </div>
+
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon>access_time</mat-icon>
+              <span>Thời gian</span>
+              <span class="score-value">{{ trustScore.timeScore }}/100</span>
+            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="trustScore.timeScore"
+              [color]="getScoreColor(trustScore.timeScore)">
+            </mat-progress-bar>
+            <div class="score-detail">{{ trustScore.details.time }}</div>
+          </div>
+
+          <div class="score-item">
+            <div class="score-item-header">
+              <mat-icon>wifi</mat-icon>
+              <span>Mạng</span>
+              <span class="score-value">{{ trustScore.networkScore }}/100</span>
+            </div>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="trustScore.networkScore"
+              [color]="getScoreColor(trustScore.networkScore)">
+            </mat-progress-bar>
+            <div class="score-detail">{{ trustScore.details.network }}</div>
+          </div>
+
+          <div class="score-item" *ngIf="trustScore.details.mfa">
+            <div class="score-item-header">
+              <mat-icon>security</mat-icon>
+              <span>MFA</span>
+            </div>
+            <div class="score-detail">{{ trustScore.details.mfa }}</div>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations" *ngIf="trustScore.overallScore < 80">
+          <h3>
+            <mat-icon>lightbulb</mat-icon>
+            Đề xuất cải thiện
+          </h3>
+          <ul>
+            <li *ngIf="trustScore.deviceScore < 70">
+              Đánh dấu thiết bị này là tin cậy để tăng điểm thiết bị
+            </li>
+            <li *ngIf="!trustScore.details.mfa || !trustScore.details.mfa.includes('enabled')">
+              Bật xác thực 2 bước để tăng 20 điểm
+            </li>
+            <li *ngIf="trustScore.networkScore < 70">
+              Tránh sử dụng VPN/Proxy khi truy cập hệ thống
+            </li>
+            <li *ngIf="trustScore.behaviorScore < 70">
+              Duy trì hoạt động ổn định để cải thiện điểm hành vi
+            </li>
+          </ul>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,182 @@
+<!-- privacy-tools.component.html -->
+<div class="privacy-tools-container">
+  <h1>Privacy-Enhancing Technologies</h1>
+
+  <mat-tab-group>
+    <!-- Data Anonymization Tab -->
+    <mat-tab label="Ẩn danh hóa dữ liệu">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Anonymization & Pseudonymization</mat-card-title>
+            <mat-card-subtitle>Bảo vệ thông tin nhạy cảm trong dữ liệu</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="anonymizeForm">
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Loại dữ liệu</mat-label>
+                  <mat-select formControlName="dataType">
+                    <mat-option *ngFor="let type of dataTypes" [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Phương pháp</mat-label>
+                  <mat-select formControlName="method">
+                    <mat-option *ngFor="let method of anonymizationMethods" [value]="method">
+                      {{ method }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Dữ liệu đầu vào (JSON)</mat-label>
+                <textarea matInput formControlName="inputData" rows="8"
+                          placeholder='{"name": "Nguyen Van A", "phone": "0123456789", ...}'></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="anonymize()" [disabled]="!anonymizeForm.valid || loading">
+                <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                <span *ngIf="!loading">Ẩn danh hóa</span>
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Tokenization Tab -->
+    <mat-tab label="Tokenization">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Data Tokenization</mat-card-title>
+            <mat-card-subtitle>Thay thế dữ liệu nhạy cảm bằng token</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="tokenizeForm">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Dữ liệu cần tokenize</mat-label>
+                <input matInput formControlName="data" placeholder="123-45-6789">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Loại token</mat-label>
+                <mat-select formControlName="tokenType">
+                  <mat-option value="SSN">Social Security Number</mat-option>
+                  <mat-option value="CreditCard">Credit Card</mat-option>
+                  <mat-option value="IdentityCard">Identity Card</mat-option>
+                  <mat-option value="Custom">Custom</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="tokenize()" [disabled]="!tokenizeForm.valid || loading">
+                <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                <span *ngIf="!loading">Tạo Token</span>
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Synthetic Data Tab -->
+    <mat-tab label="Dữ liệu tổng hợp">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Synthetic Data Generation</mat-card-title>
+            <mat-card-subtitle>Tạo dữ liệu giả lập cho testing & training</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="syntheticForm">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nguồn dữ liệu</mat-label>
+                <mat-select formControlName="sourceDataType">
+                  <mat-option *ngFor="let type of dataTypes" [value]="type">
+                    {{ type }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Số lượng bản ghi</mat-label>
+                <input matInput type="number" formControlName="recordCount">
+                <mat-hint>1-10,000 bản ghi</mat-hint>
+              </mat-form-field>
+
+              <mat-checkbox formControlName="preservePatterns">
+                Giữ nguyên các pattern dữ liệu
+              </mat-checkbox>
+
+              <div class="action-buttons">
+                <button mat-raised-button color="primary" (click)="generateSynthetic()" 
+                        [disabled]="!syntheticForm.valid || loading">
+                  <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                  <span *ngIf="!loading">Tạo dữ liệu</span>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Result Display -->
+  <mat-card *ngIf="result" class="result-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon color="primary">check_circle</mat-icon>
+        Kết quả
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="result.type === 'token'" class="token-result">
+        <div class="result-row">
+          <label>Dữ liệu gốc:</label>
+          <code>{{ result.original }}</code>
+        </div>
+        <div class="result-row">
+          <label>Token:</label>
+          <code class="token">{{ result.token }}</code>
+          <button mat-icon-button (click)="copyToClipboard(result.token)">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="result.type === 'synthetic'" class="synthetic-result">
+        <p><strong>Đã tạo {{ result.count }} bản ghi tổng hợp</strong></p>
+        <div class="preview">
+          <pre>{{ result.data | json }}</pre>
+        </div>
+      </div>
+
+      <div *ngIf="result.type === 'anonymized'" class="anonymized-result">
+        <div class="preview">
+          <pre>{{ result.data | json }}</pre>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button (click)="downloadResult()">
+        <mat-icon>download</mat-icon>
+        Tải xuống
+      </button>
+      <button mat-raised-button (click)="copyToClipboard(JSON.stringify(result.data, null, 2))">
+        <mat-icon>content_copy</mat-icon>
+        Sao chép
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

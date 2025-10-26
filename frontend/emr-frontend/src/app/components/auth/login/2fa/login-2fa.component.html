@@ -1,0 +1,62 @@
+<!-- login-2fa.component.html -->
+<div class="login-2fa-container">
+  <mat-card class="login-2fa-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>security</mat-icon>
+        Xác thực 2 bước
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="info-text">
+        {{ useBackupCode 
+          ? 'Nhập một trong các mã dự phòng của bạn' 
+          : 'Nhập mã xác thực từ ứng dụng Authenticator' }}
+      </p>
+
+      <form [formGroup]="twoFactorForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ useBackupCode ? 'Mã dự phòng (8 chữ số)' : 'Mã xác thực (6 chữ số)' }}</mat-label>
+          <input matInput 
+                 formControlName="code" 
+                 [maxlength]="useBackupCode ? 8 : 6"
+                 [placeholder]="useBackupCode ? '00000000' : '000000'"
+                 autocomplete="off"
+                 autofocus>
+          <mat-icon matSuffix>vpn_key</mat-icon>
+          <mat-error *ngIf="twoFactorForm.get('code')?.hasError('required')">
+            Vui lòng nhập mã xác thực
+          </mat-error>
+          <mat-error *ngIf="twoFactorForm.get('code')?.hasError('pattern')">
+            Mã phải là {{ useBackupCode ? '8' : '6' }} chữ số
+          </mat-error>
+        </mat-form-field>
+
+        <div *ngIf="error" class="error-message">
+          <mat-icon>error</mat-icon>
+          {{ error }}
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" 
+                class="full-width" [disabled]="!twoFactorForm.valid || loading">
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          <span *ngIf="!loading">Xác nhận</span>
+        </button>
+      </form>
+
+      <div class="alternative-options">
+        <button mat-button (click)="toggleBackupCode()">
+          {{ useBackupCode ? 'Sử dụng mã từ ứng dụng' : 'Sử dụng mã dự phòng' }}
+        </button>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-button routerLink="/login">
+        <mat-icon>arrow_back</mat-icon>
+        Quay lại
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

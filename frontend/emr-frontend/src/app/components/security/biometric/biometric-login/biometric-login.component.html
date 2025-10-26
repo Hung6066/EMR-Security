@@ -1,0 +1,39 @@
+<!-- biometric-login.component.html -->
+<div class="biometric-login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>fingerprint</mat-icon>
+        Đăng nhập bằng Sinh trắc học
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="email" autocomplete="username">
+        <mat-icon matSuffix>email</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button 
+              color="primary" 
+              class="full-width biometric-button"
+              (click)="loginWithBiometric()"
+              [disabled]="!email || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!loading">fingerprint</mat-icon>
+        <span *ngIf="!loading">Đăng nhập bằng sinh trắc học</span>
+      </button>
+
+      <div class="alternative-methods">
+        <mat-divider></mat-divider>
+        <span>hoặc</span>
+        <mat-divider></mat-divider>
+      </div>
+
+      <button mat-button routerLink="/login" class="full-width">
+        Đăng nhập bằng mật khẩu
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

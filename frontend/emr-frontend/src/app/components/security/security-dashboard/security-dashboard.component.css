@@ -1,0 +1,31 @@
+.dashboard-container { padding: 20px; }
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.widget-grid.full-span { grid-template-columns: 1fr; }
+.quick-links-card { margin-bottom: 30px; }
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 10px;
+}
+.link-button {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.link-button mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+.widget-item {
+  min-height: 200px;
+}

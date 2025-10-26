@@ -1,0 +1,49 @@
+/* security-monitor.component.css */
+.security-monitor {
+  max-width: 600px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.metric-item {
+  text-align: center;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.metric-icon mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.risk-score {
+  margin-top: 20px;
+  padding: 15px;
+}
+
+.risk-label {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+mat-progress-bar {
+  margin-top: 10px;
+}

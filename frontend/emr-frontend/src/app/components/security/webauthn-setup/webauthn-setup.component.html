@@ -1,0 +1,83 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>fingerprint</mat-icon>
+        Xác thực Sinh trắc học (WebAuthn/FIDO2)
+      </mat-card-title>
+      <mat-card-subtitle>Đăng nhập nhanh và an toàn bằng vân tay, khuôn mặt hoặc khóa bảo mật.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Cảnh báo trình duyệt không hỗ trợ -->
+      <div *ngIf="!isSupported" class="alert warn">
+        <mat-icon>error</mat-icon>
+        <span>Trình duyệt của bạn không hỗ trợ WebAuthn. Vui lòng sử dụng Chrome, Firefox, Edge, hoặc Safari phiên bản mới nhất.</span>
+      </div>
+
+      <div *ngIf="isSupported">
+        <mat-stepper [linear]="true" [selectedIndex]="currentStep - 1" class="stepper">
+          <!-- Step 1: Giới thiệu -->
+          <mat-step>
+            <ng-template matStepLabel>Giới thiệu & Bắt đầu</ng-template>
+            <div class="step-content">
+              <h3>Lợi ích của xác thực không mật khẩu:</h3>
+              <ul class="benefits">
+                <li><mat-icon color="primary">check_circle</mat-icon> Đăng nhập nhanh, không cần gõ mật khẩu.</li>
+                <li><mat-icon color="primary">check_circle</mat-icon> Bảo mật cao, chống tấn công Phishing hiệu quả.</li>
+                <li><mat-icon color="primary">check_circle</mat-icon> Dữ liệu sinh trắc học của bạn không bao giờ rời khỏi thiết bị.</li>
+              </ul>
+              <button mat-raised-button color="primary" (click)="registerBiometric()" [disabled]="loading">
+                Thêm thiết bị mới
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 2: Đang đăng ký -->
+          <mat-step>
+            <ng-template matStepLabel>Đang đăng ký...</ng-template>
+            <div class="step-content registration-progress">
+              <mat-spinner></mat-spinner>
+              <h3>Đang chờ xác thực từ thiết bị...</h3>
+              <p>Vui lòng làm theo hướng dẫn trên màn hình hoặc trên khóa bảo mật của bạn.</p>
+              <div class="instructions">
+                <p>Bạn có thể được yêu cầu:</p>
+                <ul>
+                  <li>Chạm vào khóa bảo mật (Security Key).</li>
+                  <li>Quét vân tay hoặc khuôn mặt.</li>
+                  <li>Nhập mã PIN của thiết bị.</li>
+                </ul>
+              </div>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Hoàn tất -->
+          <mat-step>
+            <ng-template matStepLabel>Hoàn tất</ng-template>
+            <div class="step-content success-message">
+              <mat-icon color="primary" class="success-icon">check_circle</mat-icon>
+              <h3>Thiết lập thành công!</h3>
+              <p>Thiết bị này đã được đăng ký. Bạn có thể sử dụng nó để đăng nhập trong lần tiếp theo.</p>
+              <button mat-raised-button color="primary" (click)="finish()">
+                Hoàn tất
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+
+      <!-- Danh sách thiết bị đã đăng ký -->
+      <div class="registered-devices" *ngIf="credentials.length > 0">
+        <h3>Thiết bị đã đăng ký</h3>
+        <table mat-table [dataSource]="credentials" class="mat-elevation-z2">
+          <ng-container matColumnDef="deviceName"><th mat-header-cell *matHeaderCellDef>Thiết bị</th><td mat-cell *matCellDef="let c"><mat-icon>{{getDeviceIcon(c.deviceName)}}</mat-icon> {{ c.deviceName }}</td></ng-container>
+          <ng-container matColumnDef="createdAt"><th mat-header-cell *matHeaderCellDef>Ngày đăng ký</th><td mat-cell *matCellDef="let c">{{ c.createdAt | date:'dd/MM/yyyy HH:mm' }}</td></ng-container>
+          <ng-container matColumnDef="lastUsedAt"><th mat-header-cell *matHeaderCellDef>Sử dụng lần cuối</th><td mat-cell *matCellDef="let c">{{ c.lastUsedAt ? (c.lastUsedAt | date:'dd/MM/yyyy HH:mm') : 'Chưa sử dụng' }}</td></ng-container>
+          <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let c"><button mat-icon-button color="warn" (click)="revokeCredential(c)" matTooltip="Xóa thiết bị"><mat-icon>delete</mat-icon></button></td></ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

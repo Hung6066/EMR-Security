@@ -1,0 +1,132 @@
+<!-- enable-2fa.component.html -->
+<div class="enable-2fa-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Bật Xác thực 2 bước</mat-card-title>
+      <mat-card-subtitle>Tăng cường bảo mật cho tài khoản của bạn</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-horizontal-stepper [linear]="true" [selectedIndex]="step - 1">
+        <!-- Step 1: Introduction -->
+        <mat-step>
+          <ng-template matStepLabel>Giới thiệu</ng-template>
+          <div class="step-content">
+            <h3>Xác thực 2 bước là gì?</h3>
+            <p>Xác thực 2 bước (2FA) thêm một lớp bảo mật bổ sung cho tài khoản của bạn.</p>
+            <p>Ngoài mật khẩu, bạn sẽ cần nhập mã xác thực từ ứng dụng authenticator.</p>
+            
+            <h4>Bạn sẽ cần:</h4>
+            <ul>
+              <li>Ứng dụng Authenticator (Google Authenticator, Microsoft Authenticator, Authy...)</li>
+              <li>Điện thoại thông minh của bạn</li>
+            </ul>
+
+            <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="loading">
+              <span *ngIf="!loading">Tiếp tục</span>
+              <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Step 2: Scan QR Code -->
+        <mat-step>
+          <ng-template matStepLabel>Quét mã QR</ng-template>
+          <div class="step-content" *ngIf="qrCodeData">
+            <h3>Quét mã QR này bằng ứng dụng Authenticator</h3>
+            
+            <div class="qr-code-container">
+              <img [src]="qrCodeData.qrCodeUrl" alt="QR Code" />
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="manual-entry">
+              <h4>Hoặc nhập thủ công:</h4>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Secret Key</mat-label>
+                <input matInput [value]="qrCodeData.secretKey" readonly>
+                <button mat-icon-button matSuffix 
+                        (click)="copyToClipboard(qrCodeData.secretKey)"
+                        matTooltip="Sao chép">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+
+            <form [formGroup]="verifyForm" (ngSubmit)="verify()">
+              <h4>Nhập mã xác thực từ ứng dụng:</h4>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mã xác thực (6 chữ số)</mat-label>
+                <input matInput formControlName="code" maxlength="6" 
+                       placeholder="000000" autocomplete="off">
+                <mat-error *ngIf="verifyForm.get('code')?.hasError('required')">
+                  Vui lòng nhập mã xác thực
+                </mat-error>
+                <mat-error *ngIf="verifyForm.get('code')?.hasError('pattern')">
+                  Mã phải là 6 chữ số
+                </mat-error>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit" 
+                      [disabled]="!verifyForm.valid || loading">
+                <span *ngIf="!loading">Xác nhận</span>
+                <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+              </button>
+            </form>
+          </div>
+        </mat-step>
+
+        <!-- Step 3: Backup Codes -->
+        <mat-step>
+          <ng-template matStepLabel>Mã dự phòng</ng-template>
+          <div class="step-content" *ngIf="qrCodeData">
+            <div class="success-message">
+              <mat-icon color="primary">check_circle</mat-icon>
+              <h3>Xác thực 2 bước đã được bật!</h3>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="backup-codes-section">
+              <h4>Lưu các mã dự phòng này:</h4>
+              <p class="warning-text">
+                <mat-icon>warning</mat-icon>
+                Mỗi mã chỉ có thể sử dụng 1 lần. Lưu trữ chúng ở nơi an toàn!
+              </p>
+
+              <div class="backup-codes-grid">
+                <mat-chip-list>
+                  <mat-chip *ngFor="let code of qrCodeData.backupCodes">
+                    {{ code }}
+                  </mat-chip>
+                </mat-chip-list>
+              </div>
+
+              <div class="backup-actions">
+                <button mat-raised-button (click)="downloadBackupCodes()">
+                  <mat-icon>download</mat-icon>
+                  Tải xuống
+                </button>
+                <button mat-raised-button (click)="copyBackupCodes()">
+                  <mat-icon>content_copy</mat-icon>
+                  Sao chép
+                </button>
+              </div>
+
+              <mat-checkbox [(ngModel)]="backupCodesDownloaded" class="confirmation">
+                Tôi đã lưu trữ các mã dự phòng ở nơi an toàn
+              </mat-checkbox>
+            </div>
+
+            <button mat-raised-button color="primary" 
+                    (click)="finish()" 
+                    [disabled]="!backupCodesDownloaded">
+              Hoàn tất
+            </button>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </mat-card-content>
+  </mat-card>
+</div>

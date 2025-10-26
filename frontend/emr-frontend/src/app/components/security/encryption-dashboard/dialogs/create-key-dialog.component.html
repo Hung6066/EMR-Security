@@ -1,0 +1,75 @@
+<!-- create-key-dialog.component.html -->
+<h2 mat-dialog-title>Tạo Encryption Key mới</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="keyForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tên khóa</mat-label>
+      <input matInput formControlName="keyName" placeholder="my-encryption-key">
+      <mat-error *ngIf="keyForm.get('keyName')?.hasError('required')">
+        Tên khóa là bắt buộc
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Loại khóa</mat-label>
+        <mat-select formControlName="keyType">
+          <mat-option *ngFor="let type of keyTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Kích thước (bits)</mat-label>
+        <mat-select formControlName="keySize">
+          <mat-option *ngFor="let size of getAvailableKeySizes()" [value]="size">
+            {{ size }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mục đích</mat-label>
+      <mat-select formControlName="purpose">
+        <mat-option *ngFor="let purpose of purposes" [value]="purpose">
+          {{ purpose }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Thời hạn (ngày)</mat-label>
+      <input matInput type="number" formControlName="validityDays">
+      <mat-hint>Số ngày khóa có hiệu lực (1-3650)</mat-hint>
+      <mat-error *ngIf="keyForm.get('validityDays')?.hasError('min')">
+        Tối thiểu 1 ngày
+      </mat-error>
+      <mat-error *ngIf="keyForm.get('validityDays')?.hasError('max')">
+        Tối đa 3650 ngày (10 năm)
+      </mat-error>
+    </mat-form-field>
+
+    <div class="info-box">
+      <mat-icon>info</mat-icon>
+      <div>
+        <strong>Lưu ý:</strong>
+        <ul>
+          <li>Khóa sẽ được mã hóa bằng master key và lưu trữ an toàn</li>
+          <li>Nên xoay vòng khóa định kỳ để tăng cường bảo mật</li>
+          <li>Khóa hết hạn sẽ không thể dùng để mã hóa dữ liệu mới</li>
+        </ul>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Hủy</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!keyForm.valid || loading">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">Tạo khóa</span>
+  </button>
+</mat-dialog-actions>

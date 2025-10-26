@@ -1,0 +1,63 @@
+<!-- api-key-display-dialog.component.html -->
+<h2 mat-dialog-title class="success-title">
+  <mat-icon color="primary">check_circle</mat-icon>
+  API Key đã được tạo thành công!
+</h2>
+
+<mat-dialog-content>
+  <div class="warning-box">
+    <mat-icon>warning</mat-icon>
+    <div>
+      <strong>Quan trọng:</strong> Đây là lần duy nhất bạn có thể xem API key này.
+      Vui lòng sao chép và lưu trữ ở nơi an toàn.
+    </div>
+  </div>
+
+  <div class="key-info">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>API Key</mat-label>
+      <textarea matInput [value]="data.apiKey" readonly rows="3"></textarea>
+      <button mat-icon-button matSuffix (click)="copyToClipboard()">
+        <mat-icon>{{ copied ? 'check' : 'content_copy' }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="info-row">
+      <strong>Tên:</strong>
+      <span>{{ data.name }}</span>
+    </div>
+    <div class="info-row">
+      <strong>Key Prefix:</strong>
+      <code>{{ data.keyPrefix }}</code>
+    </div>
+    <div class="info-row">
+      <strong>Ngày tạo:</strong>
+      <span>{{ data.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+    <div class="info-row" *ngIf="data.expiresAt">
+      <strong>Hết hạn:</strong>
+      <span>{{ data.expiresAt | date:'dd/MM/yyyy' }}</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button mat-raised-button (click)="copyToClipboard()">
+      <mat-icon>content_copy</mat-icon>
+      Sao chép
+    </button>
+    <button mat-raised-button (click)="downloadAsFile()">
+      <mat-icon>download</mat-icon>
+      Tải xuống
+    </button>
+  </div>
+
+  <mat-checkbox [(ngModel)]="confirmed" class="confirmation">
+    Tôi đã lưu trữ API key ở nơi an toàn
+  </mat-checkbox>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="close()" [disabled]="!confirmed">
+    Đóng
+  </button>
+</mat-dialog-actions>

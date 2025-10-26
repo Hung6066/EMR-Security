@@ -1,0 +1,6 @@
+.container { padding: 20px; }
+.toolbar { margin-bottom: 20px; display: flex; gap: 15px; }
+table { width: 100%; }
+.loading-spinner { display: flex; justify-content: center; padding: 50px; }
+mat-chip { display: inline-flex; align-items: center; gap: 5px; }
+code { font-family: monospace; font-size: 0.9em; }

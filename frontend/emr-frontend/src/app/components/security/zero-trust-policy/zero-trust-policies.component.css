@@ -1,0 +1,60 @@
+/* zero-trust-policies.component.css */
+.policies-container {
+  padding: 20px;
+}
+
+.toolbar {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+.description {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.resource-path {
+  font-size: 11px;
+  color: #999;
+  font-family: monospace;
+  margin-top: 4px;
+}
+
+.trust-score-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.trust-score-badge.high {
+  background-color: #4caf50;
+  color: white;
+}
+
+.trust-score-badge.medium {
+  background-color: #ff9800;
+  color: white;
+}
+
+.trust-score-badge.low {
+  background-color: #f44336;
+  color: white;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #999;
+}

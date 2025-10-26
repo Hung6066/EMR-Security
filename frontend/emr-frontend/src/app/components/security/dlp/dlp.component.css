@@ -1,0 +1,6 @@
+.container { padding: 20px; }
+.tab-content { padding: 20px 0; }
+.filter-form, .form-card { margin-top: 20px; }
+table { width: 100%; }
+td div { font-size: 0.8em; color: #666; }
+.form-card form { display: flex; flex-direction: column; gap: 15px; }

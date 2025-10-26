@@ -1,0 +1,55 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>devices</mat-icon>
+        Quản lý Phiên đăng nhập & Thiết bị
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="toolbar">
+        <p>Các thiết bị đang đăng nhập vào tài khoản của bạn.</p>
+        <button mat-stroked-button color="warn" (click)="revokeAll()">
+          Đăng xuất khỏi tất cả thiết bị khác
+        </button>
+      </div>
+
+      <div *ngIf="loading" class="loading-spinner"><mat-spinner></mat-spinner></div>
+      
+      <table *ngIf="!loading" mat-table [dataSource]="devices" class="mat-elevation-z2">
+        <!-- Device Info -->
+        <ng-container matColumnDef="deviceInfo">
+          <th mat-header-cell *matHeaderCellDef>Thiết bị & Trình duyệt</th>
+          <td mat-cell *matCellDef="let device">
+            <div class.device-cell>
+              <mat-icon>{{ getDeviceIcon(device.userAgent) }}</mat-icon>
+              <span>{{ device.userAgent }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <!-- IP Address -->
+        <ng-container matColumnDef="ipAddress">
+          <th mat-header-cell *matHeaderCellDef>Địa chỉ IP</th>
+          <td mat-cell *matCellDef="let device">{{ device.ipAddress }}</td>
+        </ng-container>
+        <!-- Last Activity -->
+        <ng-container matColumnDef="lastActivityAt">
+          <th mat-header-cell *matHeaderCellDef>Hoạt động lần cuối</th>
+          <td mat-cell *matCellDef="let device">{{ device.lastActivityAt | date:'medium' }}</td>
+        </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let device">
+            <button mat-stroked-button color="warn" (click)="revokeDevice(device)" matTooltip="Đăng xuất khỏi thiết bị này">
+              Đăng xuất
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,121 @@
+<!-- api-key-management.component.html -->
+<div class="api-key-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>vpn_key</mat-icon>
+        Quản lý API Keys
+      </mat-card-title>
+      <mat-card-subtitle>
+        Tạo và quản lý API keys cho tích hợp hệ thống
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="toolbar">
+        <button mat-raised-button color="primary" (click)="createApiKey()">
+          <mat-icon>add</mat-icon>
+          Tạo API Key mới
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="apiKeys" class="mat-elevation-z2">
+        
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Tên</th>
+          <td mat-cell *matCellDef="let key">{{ key.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="keyPrefix">
+          <th mat-header-cell *matHeaderCellDef>Key Prefix</th>
+          <td mat-cell *matCellDef="let key">
+            <code>{{ key.keyPrefix }}...</code>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Ngày tạo</th>
+          <td mat-cell *matCellDef="let key">
+            {{ key.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expiresAt">
+          <th mat-header-cell *matHeaderCellDef>Hết hạn</th>
+          <td mat-cell *matCellDef="let key">
+            {{ key.expiresAt ? (key.expiresAt | date:'dd/MM/yyyy') : 'Không giới hạn' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastUsedAt">
+          <th mat-header-cell *matHeaderCellDef>Sử dụng lần cuối</th>
+          <td mat-cell *matCellDef="let key">
+            {{ key.lastUsedAt ? (key.lastUsedAt | date:'dd/MM/yyyy HH:mm') : 'Chưa sử dụng' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+          <td mat-cell *matCellDef="let key">
+            <mat-chip [color]="getStatusColor(key)" selected>
+              {{ getStatusText(key) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let key">
+            <button mat-icon-button 
+                    color="warn" 
+                    (click)="revokeApiKey(key)"
+                    [disabled]="key.isRevoked"
+                    matTooltip="Thu hồi">
+              <mat-icon>block</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="apiKeys.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>Chưa có API key nào. Nhấn "Tạo API Key mới" để bắt đầu.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="info-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>info</mat-icon>
+        Hướng dẫn sử dụng
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <h3>Cách sử dụng API Key:</h3>
+      <ol>
+        <li>Tạo API key mới với tên mô tả</li>
+        <li>Sao chép API key (chỉ hiển thị một lần)</li>
+        <li>Thêm header vào request: <code>X-API-Key: your-api-key</code></li>
+        <li>Gọi API endpoint bình thường</li>
+      </ol>
+
+      <h3>Ví dụ:</h3>
+      <pre><code>curl -H "X-API-Key: emr_abc123..." http://localhost:5000/api/patients</code></pre>
+
+      <mat-divider></mat-divider>
+
+      <h3>Lưu ý bảo mật:</h3>
+      <ul>
+        <li>Không chia sẻ API key với người khác</li>
+        <li>Lưu trữ API key ở nơi an toàn</li>
+        <li>Thu hồi ngay nếu nghi ngờ bị lộ</li>
+        <li>Sử dụng IP whitelist nếu có thể</li>
+        <li>Đặt thời hạn hợp lý cho API key</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>

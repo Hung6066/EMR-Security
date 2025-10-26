@@ -1,0 +1,106 @@
+<!-- block-detail-dialog.component.html -->
+<h2 mat-dialog-title>
+  <mat-icon>link</mat-icon>
+  Block #{{ data.index }} Details
+</h2>
+
+<mat-dialog-content>
+  <div class="block-details">
+    <mat-card class="detail-section">
+      <mat-card-header>
+        <mat-card-title>Block Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Index:</label>
+            <span>{{ data.index }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Timestamp:</label>
+            <span>{{ data.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <label>Hash:</label>
+            <div class="hash-value">
+              <code>{{ data.hash }}</code>
+              <button mat-icon-button (click)="copyToClipboard(data.hash)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="detail-item full-width">
+            <label>Previous Hash:</label>
+            <div class="hash-value">
+              <code>{{ data.previousHash }}</code>
+              <button mat-icon-button (click)="copyToClipboard(data.previousHash)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="detail-item">
+            <label>Nonce:</label>
+            <span>{{ data.nonce }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Difficulty:</label>
+            <span>{{ data.difficulty }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <label>Merkle Root:</label>
+            <code>{{ data.merkleRoot }}</code>
+          </div>
+          <div class="detail-item">
+            <label>Status:</label>
+            <mat-chip [color]="data.isValid ? 'primary' : 'warn'" selected>
+              {{ data.isValid ? 'Valid' : 'Invalid' }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-section" *ngIf="transactions.length > 0">
+      <mat-card-header>
+        <mat-card-title>Transactions ({{ transactions.length }})</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let tx of transactions; let i = index">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Transaction #{{ i + 1 }} - {{ tx.TransactionType }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ tx.Timestamp | date:'dd/MM/yyyy HH:mm' }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="transaction-details">
+              <div class="detail-row">
+                <strong>Transaction ID:</strong>
+                <code>{{ tx.TransactionId }}</code>
+              </div>
+              <div class="detail-row">
+                <strong>Type:</strong>
+                <span>{{ tx.TransactionType }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>User ID:</strong>
+                <span>{{ tx.UserId }}</span>
+              </div>
+              <div class="detail-row">
+                <strong>Payload:</strong>
+                <pre>{{ tx.Payload }}</pre>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Đóng</button>
+</mat-dialog-actions>

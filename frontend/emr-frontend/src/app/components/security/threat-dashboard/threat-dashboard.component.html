@@ -1,0 +1,118 @@
+<!-- threat-dashboard.component.html -->
+<div class="threat-dashboard-container">
+  <h1>Bảng điều khiển An ninh</h1>
+
+  <!-- Threat Indicators -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>warning</mat-icon>
+        Chỉ số Mối đe dọa Hoạt động
+      </mat-card-title>
+      <mat-card-subtitle>
+        Cập nhật thời gian thực các mối đe dọa được phát hiện
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table mat-table [dataSource]="threats" class="mat-elevation-z2">
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let threat">
+            <mat-chip [color]="getSeverityColor(threat.severity)" selected>
+              {{ threat.type }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef>Giá trị</th>
+          <td mat-cell *matCellDef="let threat">
+            <code>{{ threat.value }}</code>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="severity">
+          <th mat-header-cell *matHeaderCellDef>Mức độ</th>
+          <td mat-cell *matCellDef="let threat">
+            <div class="severity-indicator">
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="threat.severity * 10"
+                [color]="getSeverityColor(threat.severity)">
+              </mat-progress-bar>
+              <span>{{ getSeverityLabel(threat.severity) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="detectedAt">
+          <th mat-header-cell *matHeaderCellDef>Phát hiện</th>
+          <td mat-cell *matCellDef="let threat">
+            {{ threat.detectedAt | date:'dd/MM/yyyy HH:mm:ss' }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsThreats"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsThreats;"></tr>
+      </table>
+
+      <div *ngIf="threats.length === 0" class="no-data">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <p>Không phát hiện mối đe dọa</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- IP Blacklist -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>block</mat-icon>
+        Danh sách IP Bị chặn
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table mat-table [dataSource]="blacklist" class="mat-elevation-z2">
+        <ng-container matColumnDef="ipAddress">
+          <th mat-header-cell *matHeaderCellDef>IP Address</th>
+          <td mat-cell *matCellDef="let item">
+            <code>{{ item.ipAddress }}</code>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>Lý do</th>
+          <td mat-cell *matCellDef="let item">{{ item.reason }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="blockedAt">
+          <th mat-header-cell *matHeaderCellDef>Chặn lúc</th>
+          <td mat-cell *matCellDef="let item">
+            {{ item.blockedAt | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expiresAt">
+          <th mat-header-cell *matHeaderCellDef>Hết hạn</th>
+          <td mat-cell *matCellDef="let item">
+            {{ item.expiresAt ? (item.expiresAt | date:'dd/MM/yyyy HH:mm') : 'Vĩnh viễn' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let item">
+            <button mat-icon-button (click)="unblockIp(item)" matTooltip="Bỏ chặn">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsBlacklist"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsBlacklist;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

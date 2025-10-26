@@ -1,0 +1,62 @@
+<div class="dashboard-container">
+  <h1>Security Center Dashboard</h1>
+  
+  <!-- Hàng đầu tiên: Các widget tổng quan quan trọng -->
+  <div class="widget-grid">
+    <!-- Trust Score Widget -->
+    <app-trust-score class="widget-item"></app-trust-score>
+    
+    <!-- Anomaly Detection Widget -->
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>Phát hiện Bất thường</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <!-- Tích hợp một phiên bản nhỏ của app-anomaly-detection ở đây -->
+        <p>12 anomalies detected in the last 24 hours.</p>
+        <a mat-button color="primary" routerLink="/security/anomaly-detection">Xem chi tiết</a>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Security Incidents Widget -->
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>Sự cố Bảo mật</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <!-- Tích hợp widget nhỏ của app-security-incidents -->
+        <p>3 open incidents (1 Critical, 2 High).</p>
+        <a mat-button color="warn" routerLink="/security/security-incidents">Xem chi tiết</a>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Hàng thứ hai: Quick Links -->
+  <mat-card class="quick-links-card">
+    <mat-card-header><mat-card-title>Công cụ Bảo mật</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div class="quick-links-grid">
+        <a *ngFor="let link of quickLinks" mat-raised-button class="link-button" [routerLink]="link.route">
+          <mat-icon>{{ link.icon }}</mat-icon>
+          <span>{{ link.title }}</span>
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Hàng thứ ba: Các dashboard chi tiết hơn -->
+  <div class="widget-grid full-span">
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>Hoạt động Threat Hunting gần đây</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <!-- Tích hợp widget của app-threat-hunting -->
+        <p>5 suspicious activities found in the last hunt.</p>
+        <a mat-button routerLink="/security/threat-hunting">Bắt đầu Hunt</a>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>Trạng thái Blockchain</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <!-- Tích hợp widget của app-blockchain-explorer -->
+        <p>Chain valid. 150 blocks. 12 pending transactions.</p>
+        <a mat-button routerLink="/security/blockchain-explorer">Mở Explorer</a>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

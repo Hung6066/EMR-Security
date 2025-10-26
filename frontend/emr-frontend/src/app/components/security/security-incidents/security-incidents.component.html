@@ -1,0 +1,126 @@
+<!-- security-incidents.component.html -->
+<div class="incidents-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>security</mat-icon>
+        Security Incident Response
+      </mat-card-title>
+      <mat-card-subtitle>
+        Quản lý và xử lý sự cố bảo mật
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Filters and Actions -->
+      <div class="toolbar">
+        <div class="filters">
+          <mat-form-field appearance="outline">
+            <mat-label>Mức độ</mat-label>
+            <mat-select [(value)]="severityFilter">
+              <mat-option value="all">Tất cả</mat-option>
+              <mat-option value="Critical">Critical</mat-option>
+              <mat-option value="High">High</mat-option>
+              <mat-option value="Medium">Medium</mat-option>
+              <mat-option value="Low">Low</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Trạng thái</mat-label>
+            <mat-select [(value)]="statusFilter">
+              <mat-option value="all">Tất cả</mat-option>
+              <mat-option value="New">New</mat-option>
+              <mat-option value="Investigating">Investigating</mat-option>
+              <mat-option value="Contained">Contained</mat-option>
+              <mat-option value="Resolved">Resolved</mat-option>
+              <mat-option value="Closed">Closed</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="createIncident()">
+          <mat-icon>add_alert</mat-icon>
+          Tạo Incident mới
+        </button>
+      </div>
+
+      <!-- Incidents Table -->
+      <table mat-table [dataSource]="getFilteredIncidents()" class="mat-elevation-z2">
+        
+        <ng-container matColumnDef="severity">
+          <th mat-header-cell *matHeaderCellDef>Mức độ</th>
+          <td mat-cell *matCellDef="let incident">
+            <div class="severity-badge" [ngClass]="getSeverityColor(incident.severity)">
+              <mat-icon>{{ getSeverityIcon(incident.severity) }}</mat-icon>
+              <span>{{ incident.severity }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Tiêu đề</th>
+          <td mat-cell *matCellDef="let incident">
+            <div class="incident-title">
+              <strong>{{ incident.title }}</strong>
+              <div class="incident-id">ID: #{{ incident.id }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let incident">
+            <mat-chip>{{ incident.category }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+          <td mat-cell *matCellDef="let incident">
+            <mat-chip [color]="getStatusColor(incident.status)" selected>
+              {{ incident.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="detectedAt">
+          <th mat-header-cell *matHeaderCellDef>Phát hiện</th>
+          <td mat-cell *matCellDef="let incident">
+            {{ incident.detectedAt | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignedTo">
+          <th mat-header-cell *matHeaderCellDef>Người xử lý</th>
+          <td mat-cell *matCellDef="let incident">
+            <div *ngIf="incident.assignedToUserName; else unassigned">
+              <mat-icon>person</mat-icon>
+              {{ incident.assignedToUserName }}
+            </div>
+            <ng-template #unassigned>
+              <span class="unassigned">Chưa phân công</span>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let incident">
+            <button mat-icon-button (click)="viewIncident(incident)" matTooltip="Xem chi tiết">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="incident-row"></tr>
+      </table>
+
+      <div *ngIf="getFilteredIncidents().length === 0" class="no-data">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <p>Không có incident nào khớp với bộ lọc</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

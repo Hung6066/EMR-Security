@@ -1,0 +1,90 @@
+<!-- compliance-dashboard.component.html -->
+<div class="compliance-container">
+  <h1>Compliance Dashboard</h1>
+
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="compliance-content">
+    <!-- Standards Overview -->
+    <div class="standards-grid">
+      <mat-card *ngFor="let report of reports" 
+                class="standard-card"
+                [class.selected]="selectedReport?.standard === report.standard"
+                (click)="selectReport(report)">
+        <mat-card-header>
+          <mat-card-title>{{ report.standard }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="score-display">
+            <div class="score-circle" [style.border-color]="getComplianceColor(report.overallScore)">
+              <span class="score-number">{{ report.overallScore }}%</span>
+            </div>
+          </div>
+          <div class="last-assessment">
+            Đánh giá lần cuối: {{ report.lastAssessment | date:'dd/MM/yyyy' }}
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="runAssessment(report.standard); $event.stopPropagation()">
+            <mat-icon>refresh</mat-icon>
+            Đánh giá lại
+          </button>
+          <button mat-button (click)="exportReport(report.standard); $event.stopPropagation()">
+            <mat-icon>file_download</mat-icon>
+            Xuất báo cáo
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Detailed View -->
+    <mat-card *ngIf="selectedReport" class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Chi tiết: {{ selectedReport.standard }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let category of selectedReport.categories">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ category.name }}
+              </mat-panel-title>
+              <mat-panel-description>
+                <mat-chip [style.background-color]="getComplianceColor(category.score)">
+                  {{ category.score }}%
+                </mat-chip>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <table class="requirements-table">
+              <thead>
+                <tr>
+                  <th>Yêu cầu</th>
+                  <th>Trạng thái</th>
+                  <th>Kiểm tra lần cuối</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let req of category.requirements">
+                  <td>
+                    <div class="req-id">{{ req.id }}</div>
+                    <div class="req-description">{{ req.description }}</div>
+                  </td>
+                  <td>
+                    <mat-chip [color]="getStatusColor(req.status)" selected>
+                      <mat-icon>{{ getStatusIcon(req.status) }}</mat-icon>
+                      {{ req.status }}
+                    </mat-chip>
+                  </td>
+                  <td>{{ req.lastChecked | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

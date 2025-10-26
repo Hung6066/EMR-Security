@@ -1,0 +1,92 @@
+/* encryption-dashboard.component.css */
+.encryption-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.metric-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px !important;
+}
+
+.metric-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.metric-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+}
+
+.metric-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+.toolbar {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+.expiring-soon {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.days-until {
+  font-size: 11px;
+  color: #999;
+}
+
+.vault-key-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.vault-key-name mat-icon {
+  color: #1976d2;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #999;
+}
