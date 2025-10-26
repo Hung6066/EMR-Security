@@ -68,6 +68,16 @@ namespace EMRSystem.Infrastructure.Interceptors
                     NewValues = newValues,
                     IsSuccess = true
                 });
+
+                        // Sau đó gọi UEBA để phân tích
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var uebaService = scope.ServiceProvider.GetRequiredService<IUebaService>();
+                    foreach (var log in auditLogs)
+                    {
+                        await uebaService.AnalyzeAndAlertOnActivityAsync(log);
+                    }
+                }
             }
         }
 

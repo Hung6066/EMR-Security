@@ -29,3 +29,19 @@
 .widget-item {
   min-height: 200px;
 }
+
+widget-grid.high-priority .widget-item {
+  border-left-width: 5px;
+  border-left-style: solid;
+}
+.widget-item.critical { border-left-color: #d32f2f; }
+.widget-item.high { border-left-color: #f57c00; }
+.widget-item.medium { border-left-color: #fbc02d; }
+.metric-large {
+  font-size: 4rem;
+  font-weight: 300;
+  text-align: center;
+  margin: 20px 0;
+}
+.quick-links-card { background-color: #f9f9f9; }
+.quick-links-grid a { text-align: left; justify-content: flex-start; }

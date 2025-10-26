@@ -8,15 +8,18 @@ namespace EMRSystem.Application.Services
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
         private readonly ILogger<SecurityIncidentService> _logger;
+        private readonly ISoarService _soarService;
 
         public SecurityIncidentService(
             ApplicationDbContext context,
             IEmailService emailService,
-            ILogger<SecurityIncidentService> logger)
+            ILogger<SecurityIncidentService> logger,
+            ISoarService soarService)
         {
             _context = context;
             _emailService = emailService;
             _logger = logger;
+            _soarService = soarService;
         }
 
         public async Task<SecurityIncident> CreateIncidentAsync(CreateIncidentDto dto)
@@ -38,6 +41,9 @@ namespace EMRSystem.Application.Services
 
             _context.SecurityIncidents.Add(incident);
             await _context.SaveChangesAsync();
+
+            // >>> KÍCH HOẠT SOAR <<<
+            await _soarService.HandleIncident(incident);
 
             // Execute automated response
             await ExecuteAutomatedResponseAsync(incident);

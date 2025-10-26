@@ -1,0 +1,60 @@
+<h2 mat-dialog-title [ngClass]="getScoreColorClass()">
+  <mat-icon>psychology</mat-icon>
+  UEBA Alert #{{ alert.id }} - Behavioral Deviation
+</h2>
+
+<mat-dialog-content>
+  <div class="detail-container">
+    <div class="summary-section">
+      <div class="summary-item"><strong>User:</strong> {{ alert.userName }} (#{{ alert.userId }})</div>
+      <div class="summary-item">
+        <strong>Deviation Score:</strong>
+        <span class="score-text" [ngClass]="getScoreColorClass()">
+          {{ (alert.deviationScore * 100).toFixed(0) }}%
+        </span>
+      </div>
+      <div class="summary-item"><strong>Detected At:</strong> {{ alert.detectedAt | date:'medium' }}</div>
+      <div class="summary-item"><strong>Status:</strong>
+        <mat-chip [color]="alert.status === 'New' ? 'warn' : 'primary'" selected>{{ alert.status }}</mat-chip>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Anomalous Factors</h3>
+      <p class="description">{{ alert.description }}</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Triggering Event Context</h3>
+      <div class="context-grid">
+        <div class="context-item">
+          <mat-icon>touch_app</mat-icon>
+          <div><strong>Action:</strong> <code>{{ contextData.Action }}</code></div>
+        </div>
+        <div class="context-item">
+          <mat-icon>folder</mat-icon>
+          <div><strong>Resource:</strong> <code>{{ contextData.EntityType }} #{{ contextData.EntityId }}</code></div>
+        </div>
+        <div class="context-item">
+          <mat-icon>public</mat-icon>
+          <div><strong>IP Address:</strong> <code>{{ contextData.IpAddress }}</code></div>
+        </div>
+      </div>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header><mat-panel-title>Raw Context Data</mat-panel-title></mat-expansion-panel-header>
+        <pre>{{ contextData | json }}</pre>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="updateStatus('Investigating')">Start Investigation</button>
+  <button mat-stroked-button color="accent" (click)="updateStatus('FalsePositive')">Mark as False Positive</button>
+  <button mat-stroked-button color="primary" (click)="updateStatus('Resolved')">Mark as Resolved</button>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

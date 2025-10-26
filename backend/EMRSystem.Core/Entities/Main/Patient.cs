@@ -18,15 +18,18 @@ namespace EMRSystem.Core.Entities
         [StringLength(10)]
         public string Gender { get; set; } // Nam, Nữ, Khác
         
+        [DataMasking(MaskingRule.ShowLast4)]
         [StringLength(12)]
         public string IdentityCard { get; set; }
         
         [Phone]
         public string PhoneNumber { get; set; }
         
+         [DataMasking(MaskingRule.Email)]
         [EmailAddress]
         public string Email { get; set; }
         
+        [DataMasking(MaskingRule.MaskAll)]
         public string Address { get; set; }
         
         [StringLength(20)]

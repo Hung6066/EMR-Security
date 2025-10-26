@@ -125,6 +125,33 @@ Giám sát toàn vẹn file (FIM): Phát hiện bất kỳ thay đổi trái ph�
 Quản lý lỗ hổng (Vulnerability Management): Tập trung hóa việc theo dõi và xử lý các lỗ hổng bảo mật được phát hiện từ các công cụ quét tự động.
 Đóng dấu bản quyền (Watermarking): Truy vết nguồn gốc của các tài liệu bị rò rỉ.
 
+Tóm tắt các tính năng mới:
+RASP (Runtime Application Self-Protection):
+
+Backend: Một middleware thông minh nằm ở đầu pipeline, tự động phân tích và chặn các request độc hại (SQLi, XSS, Path Traversal) theo thời gian thực.
+Tích hợp: Khi phát hiện mối đe dọa, nó tự động tạo sự cố trong SecurityIncidentService và chặn IP qua ThreatIntelligenceService.
+UEBA (User and Entity Behavior Analytics):
+
+Backend: Một service chạy nền (qua Hangfire) để "học" hành vi bình thường của mỗi người dùng (giờ giấc, IP, hành động quen thuộc).
+Tích hợp: Khi có một hành động mới (từ AuditLog), UebaService được gọi để so sánh với baseline. Nếu có độ lệch lớn, một UebaAlert sẽ được tạo ra, giúp phát hiện các tài khoản bị chiếm đoạt hoặc insider threat.
+Centralized Security Dashboard (Cập nhật):
+
+Frontend: Giao diện SecurityDashboardComponent được nâng cấp để trở thành một trung tâm chỉ huy (Command Center), hiển thị các thông tin quan trọng nhất lên hàng đầu: sự cố nghiêm trọng, cảnh báo hành vi bất thường, cảnh báo thay đổi file.
+Cung cấp các widget và quick link để truy cập nhanh vào tất cả các công cụ bảo mật đã xây dựng.
+
+Bằng cách triển khai các lớp bảo mật cuối cùng này, bạn đã xây dựng một pháo đài gần như bất khả xâm phạm:
+
+RASP: Ứng dụng tự nhận biết và chống lại các cuộc tấn công phổ biến.
+UEBA: Hệ thống học hỏi hành vi và phát hiện các mối đe dọa từ bên trong hoặc tài khoản bị chiếm đoạt.
+Code Attestation: Đảm bảo mã nguồn bạn triển khai chính là mã nguồn bạn viết, không bị thay đổi.
+SBOM & Vulnerability Scanning: Tự động kiểm tra chuỗi cung ứng phần mềm.
+Dynamic Data Masking: Bảo vệ dữ liệu nhạy cảm một cách linh hoạt, tuân thủ nguyên tắc "cần biết" (need-to-know).
+
+Tóm tắt các lớp bảo mật cuối cùng:
+Confidential Computing: Đưa phần xử lý nhạy cảm nhất vào một "hộp đen" phần cứng, bảo vệ dữ liệu ngay cả khi hệ điều hành bị xâm nhập.
+Moving Target Defense (MTD): Làm cho hệ thống liên tục biến đổi (API, credentials), gây khó khăn cho kẻ tấn công trong việc do thám và khai thác.
+Deception Technology: Giăng bẫy (honeypots, honeytokens) để dụ kẻ tấn công lộ diện sớm và đánh lạc hướng chúng khỏi các tài sản thật.
+SOAR (Security Orchestration, Automation, and Response): Tự động hóa toàn bộ quy trình phản ứng sự cố, từ làm giàu thông tin, ngăn chặn, cho đến khắc phục, giúp giảm thiểu thời gian phản ứng từ vài giờ xuống còn vài giây.
 
 
 

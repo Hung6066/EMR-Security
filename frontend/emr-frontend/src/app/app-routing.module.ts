@@ -48,6 +48,7 @@ const routes: Routes = [
     { path: '', component: SecurityDashboardComponent },
     { path: 'webauthn-setup', component: WebAuthnSetupComponent },
     { path: 'trusted-devices', component: TrustedDevicesComponent },
+    { path: 'ueba', component: UebaDashboardComponent },
   }
   { path: '**', redirectTo: '/dashboard' }
 ];

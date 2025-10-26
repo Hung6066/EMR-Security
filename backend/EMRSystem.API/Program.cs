@@ -125,6 +125,8 @@ builder.Services.AddScoped<IZeroTrustService, ZeroTrustService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddTransient<IPasswordValidator<ApplicationUser>, CustomPasswordValidator>();
 
+builder.Services.AddSingleton<IObjectFactory>(sp => new ObjectFactory(sp));
+
 // --- Rate Limiting ---
 builder.Services.AddMemoryCache();
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
@@ -200,7 +202,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseSecurityHeaders();
 app.UseIpRateLimiting();
+app.UseRasp(); // Thêm dòng này
 app.UseCors("AllowAngular");
+
+app.UseRouting();
+
+// Thêm MTD Middleware ngay trước UseEndpoints
+app.UseMovingTargetDefense();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -209,7 +217,16 @@ app.UseZeroTrust();
 app.UseStaticFiles();
 app.UseDefaultFiles();
 
-app.MapControllers();
+app.MapControllers()
+.AddJsonOptions(options =>
+{
+    // Lấy service provider để truyền vào factory
+    var serviceProvider = builder.Services.BuildServiceProvider();
+    var objectFactory = serviceProvider.GetRequiredService<IObjectFactory>();
+    
+    // Converter factory của chúng ta sẽ được gọi khi có attribute [DataMasking]
+    // Không cần thêm trực tiếp vào options.Converters
+});
 app.MapFallbackToFile("index.html");
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
@@ -222,6 +239,22 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 });
 app.UseDlp(); // Thêm dòng này
 
+using (var scope = app.Services.CreateScope())
+{
+    var attestationService = scope.ServiceProvider.GetRequiredService<ICodeAttestationService>();
+    var verificationResult = await attestationService.VerifySelfAsync();
+    
+    if (!verificationResult.IsValid)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogCritical("CODE ATTESTATION FAILED! Application has been tampered with. Files: {Files}", 
+            string.Join(", ", verificationResult.MismatchedFiles));
+        
+        // Ngăn ứng dụng khởi động hoàn toàn
+        // Có thể throw exception hoặc Environment.Exit(1)
+        throw new ApplicationException("Application integrity check failed. Shutting down.");
+    }
+}
 
 // --- Seed Data ---
 using (var scope = app.Services.CreateScope())
@@ -234,5 +267,11 @@ RecurringJob.AddOrUpdate<FileIntegrityService>(
     "fim-scan", 
     service => service.ScanForChangesAsync(), 
     Cron.Hourly);
+
+    // Program.cs
+RecurringJob.AddOrUpdate<IUebaService>(
+    "ueba-baseline-update", 
+    service => service.UpdateBehavioralBaselinesAsync(), 
+    Cron.Daily(2)); // Chạy vào 2 giờ sáng mỗi ngày
 
 app.Run();

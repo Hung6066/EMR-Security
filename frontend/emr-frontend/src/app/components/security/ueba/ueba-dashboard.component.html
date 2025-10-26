@@ -1,0 +1,100 @@
+<div class="container">
+  <h1>User and Entity Behavior Analytics (UEBA)</h1>
+
+  <!-- Metrics Dashboard -->
+  <div class="metrics-grid" *ngIf="metrics">
+    <mat-card class="metric-card">
+      <mat-card-header><mat-card-title>Total Alerts</mat-card-title></mat-card-header>
+      <mat-card-content class="metric-value">{{ metrics.totalAlerts }}</mat-card-content>
+    </mat-card>
+    <mat-card class="metric-card unresolved">
+      <mat-card-header><mat-card-title>Unresolved</mat-card-title></mat-card-header>
+      <mat-card-content class="metric-value">{{ metrics.unresolvedAlerts }}</mat-card-content>
+    </mat-card>
+    <mat-card class="metric-card">
+      <mat-card-header><mat-card-title>Avg. Deviation</mat-card-title></mat-card-header>
+      <mat-card-content class="metric-value">{{ (metrics.avgDeviationScore * 100).toFixed(0) }}%</mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Alerts Table -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Behavioral Alerts</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" (ngSubmit)="loadData()" class="filter-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Khoảng thời gian</mat-label>
+          <mat-date-range-input [formGroup]="filterForm.get('range')!" [rangePicker]="picker">
+            <input matStartDate formControlName="from" placeholder="Từ ngày">
+            <input matEndDate formControlName="to" placeholder="Đến ngày">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Lọc</button>
+      </form>
+
+      <div *ngIf="loading" class="loading-spinner"><mat-spinner></mat-spinner></div>
+
+      <table *ngIf="!loading" mat-table [dataSource]="alerts" class="mat-elevation-z2">
+        <!-- Deviation Score Column -->
+        <ng-container matColumnDef="deviationScore">
+          <th mat-header-cell *matHeaderCellDef> Deviation Score </th>
+          <td mat-cell *matCellDef="let alert">
+            <div class="score-badge" [ngClass]="getScoreColor(alert.deviationScore)">
+              {{ (alert.deviationScore * 100).toFixed(0) }}
+            </div>
+            <div class="score-label">{{ getScoreLabel(alert.deviationScore) }}</div>
+          </td>
+        </ng-container>
+
+        <!-- User Name Column -->
+        <ng-container matColumnDef="userName">
+          <th mat-header-cell *matHeaderCellDef> User </th>
+          <td mat-cell *matCellDef="let alert">{{ alert.userName }} (#{{ alert.userId }})</td>
+        </ng-container>
+
+        <!-- Alert Type Column -->
+        <ng-container matColumnDef="alertType">
+          <th mat-header-cell *matHeaderCellDef> Alert Type </th>
+          <td mat-cell *matCellDef="let alert">{{ alert.alertType }}</td>
+        </ng-container>
+
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef> Description </th>
+          <td mat-cell *matCellDef="let alert">{{ alert.description }}</td>
+        </ng-container>
+
+        <!-- Detected At Column -->
+        <ng-container matColumnDef="detectedAt">
+          <th mat-header-cell *matHeaderCellDef> Detected At </th>
+          <td mat-cell *matCellDef="let alert">{{ alert.detectedAt | date:'dd/MM/yy HH:mm:ss' }}</td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let alert">
+            <mat-chip [color]="alert.status === 'New' ? 'warn' : ''" selected>{{ alert.status }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let alert">
+            <button mat-icon-button (click)="viewDetails(alert)" matTooltip="Investigate">
+              <mat-icon>manage_search</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

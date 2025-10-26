@@ -269,6 +269,11 @@ namespace EMRSystem.Application.Services
 
             var roles = await _userManager.GetRolesAsync(user);
 
+            if (roles.Contains("Doctor") || roles.Contains("Admin"))
+            {
+                claims.Add(new Claim("permission", "ViewFullPII"));
+            }
+
             return new AuthResponseDto
             {
                 UserId = user.Id,

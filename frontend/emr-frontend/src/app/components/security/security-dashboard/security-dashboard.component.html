@@ -59,4 +59,75 @@
       </mat-card-content>
     </mat-card>
   </div>
+
+  <h1>Security Command Center</h1>
+  
+  <div class="widget-grid high-priority">
+    <!-- Widget sự cố mở -->
+    <mat-card class="widget-item critical">
+      <mat-card-header><mat-card-title>Open Critical Incidents</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="metric-large">3</div> 
+        <a mat-button color="warn" routerLink="/security/security-incidents">Investigate Now</a>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Widget cảnh báo UEBA -->
+    <mat-card class="widget-item high">
+      <mat-card-header><mat-card-title>High-Risk UEBA Alerts</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="metric-large">8</div>
+        <a mat-button color="accent" routerLink="/security/ueba-alerts">Review Behaviors</a>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Widget FIM -->
+    <mat-card class="widget-item medium">
+      <mat-card-header><mat-card-title>File Integrity Alerts</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="metric-large">5</div>
+        <a mat-button routerLink="/security/fim">Check Changes</a>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="widget-grid">
+    <!-- Trust Score Widget -->
+    <app-trust-score class="widget-item"></app-trust-score>
+    
+    <!-- DLP Widget -->
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>DLP Incidents (24h)</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="metric-large">15</div>
+        <p>Blocked: 2, Redacted: 13</p>
+        <a mat-button routerLink="/security/dlp">View DLP Dashboard</a>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Vulnerability Widget -->
+    <app-vulnerability-summary-widget class="widget-item"></app-vulnerability-summary-widget>
+
+    <!-- Threat Hunting Widget -->
+    <mat-card class="widget-item">
+      <mat-card-header><mat-card-title>Threat Hunting</mat-card-title></mat-card-header>
+      <mat-card-content>
+         <p>Last hunt found 5 suspicious activities.</p>
+         <button mat-stroked-button color="primary" routerLink="/security/threat-hunting">Start New Hunt</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Quick Links -->
+  <mat-card class="quick-links-card">
+    <mat-card-header><mat-card-title>Security Tools & Management</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div class="quick-links-grid">
+        <a mat-raised-button routerLink="/security/password-policy"><mat-icon>policy</mat-icon> Password Policy</a>
+        <a mat-raised-button routerLink="/security/session-playback"><mat-icon>slideshow</mat-icon> Session Playback</a>
+        <a mat-raised-button routerLink="/security/blockchain-explorer"><mat-icon>link</mat-icon> Blockchain Explorer</a>
+        <!-- Thêm các link khác -->
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
