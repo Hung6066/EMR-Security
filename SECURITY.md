@@ -306,3 +306,184 @@ Blockchain Mining
 
 -   Nếu bạn phát hiện bất kỳ vấn đề bảo mật nào, vui lòng tạo một "Issue" trên repository hoặc liên hệ trực tiếp qua email: [your-security-email@example.com].
 -   Chúng tôi hoan nghênh và đánh giá cao mọi đóng góp từ cộng đồng để làm cho hệ thống này an toàn hơn.
+
+## Áp dụng thực hành
+
++---------------------------------------------------------------------------------+
+| [ USER / CLIENT ] |
++---------------------------------------------------------------------------------+
+| (HTTPS/TLS 1.3)
++---------------------------------------------------------------------------------+
+| Lớp 0: Mạng & Chu vi (Network & Perimeter) |
+| - Tường lửa (WAF) |
+| - Chống DDoS |
+| - Geo-Blocking |
+| - DNS Security (DNSSEC, DMARC) |
++---------------------------------------------------------------------------------+
+|
++---------------------------------------------------------------------------------+
+| Lớp 1: Cổng vào Ứng dụng (Application Gateway) |
+| - Rate Limiting: Chặn Brute Force, DoS |
+| - CAPTCHA: Chặn Bot |
+| - RASP (Runtime Self-Protection): Chặn SQLi, XSS, Path Traversal real-time |
+| - Security Headers: CSP, HSTS, X-Frame-Options... |
++---------------------------------------------------------------------------------+
+|
++---------------------------------------------------------------------------------+
+| Lớp 2: Nhận dạng & Xác thực (Identity & Authentication) |
+| - Xác thực đa yếu tố (MFA): TOTP, FIDO2/WebAuthn (Sinh trắc học) |
+| - Quản lý Chính sách Mật khẩu Động (Độ mạnh, Hết hạn, Lịch sử, HIBP) |
+| - Device Fingerprinting: Nhận diện thiết bị |
+| - Just-in-Time (JIT) Credentials (Tích hợp Vault) |
++---------------------------------------------------------------------------------+
+|
++---------------------------------------------------------------------------------+
+| Lớp 3: Zero Trust - Ủy quyền & Đánh giá Truy cập (Authorization & Access |
+| Evaluation) |
+| - Zero Trust Policy Engine: |
+| - Tính Trust Score (Device, Location, Behavior, Network, Time) |
+| - RBAC + ABAC (Attribute-Based Access Control) |
+| - Đánh giá liên tục -> Yêu cầu Step-up Auth nếu Trust Score giảm |
++---------------------------------------------------------------------------------+
+|
++---------------------------------------------------------------------------------+
+| Lớp 4: Logic Ứng dụng & Dữ liệu (Application Logic & Data) |
+| - Deception Tech: Honeypots (API giả), Honey Tokens (Dữ liệu giả) |
+| - Dynamic Data Masking: Che dữ liệu nhạy cảm theo quyền |
+| - Data Leakage Prevention (DLP): Quét response, chặn/che dữ liệu rò rỉ |
+| - Watermarking: Đóng dấu file PDF/ảnh được xuất |
+| - Mã hóa Tầng Ứng dụng (ALE) & Quản lý Khóa (KMS) |
+| - Confidential Computing: Xử lý dữ liệu trong Secure Enclave |
++---------------------------------------------------------------------------------+
+| |
+v v
++------------------------+ +-----------------------------------------+
+| CSDL (At-Rest | | Lớp 5: Giám sát, Phát hiện & Phản ứng |
+| Encryption - TDE) | | (Logging, Detection & Response) |
++------------------------+ | - Immutable Audit Trail (Blockchain) |
+| - UEBA: Phân tích hành vi người dùng |
+| - Threat Hunting: Chủ động săn lùng |
+| - SOAR: Tự động hóa phản ứng sự cố |
+| - FIM: Giám sát toàn vẹn file |
+| - SBOM & Code Attestation: Bảo vệ chuỗi |
+| cung ứng |
++-----------------------------------------+
+
+
+---
+
+## 3. Chi tiết Vận hành các Lớp Bảo mật
+
+### Lớp 1: Identity & Access Management (IAM)
+
+_Mục tiêu: Đảm bảo chỉ đúng người, đúng thời điểm, đúng thiết bị được phép vào hệ thống._
+
+1.  **Xác thực Mạnh & Đa yếu tố (MFA):**
+    -   **Cách vận hành:** Sau khi nhập đúng mật khẩu, hệ thống yêu cầu một yếu tố thứ hai.
+        -   **TOTP:** Người dùng nhập mã 6 số từ ứng dụng Google Authenticator/Authy.
+        -   **WebAuthn/FIDO2:** Trình duyệt yêu cầu người dùng xác thực bằng sinh trắc học (vân tay, khuôn mặt trên điện thoại/laptop) hoặc cắm khóa bảo mật vật lý (YubiKey). Đây là phương thức ưu tiên vì chống được phishing.
+    -   **Thành phần:** `ITwoFactorService`, `IWebAuthnService`, `WebAuthnSetupComponent`.
+
+2.  **Quản lý Chính sách Mật khẩu Động:**
+    -   **Cách vận hành:** Admin cấu hình các quy tắc trong UI. Khi người dùng tạo/đổi mật khẩu, `CustomPasswordValidator` sẽ gọi `IPasswordPolicyService` để kiểm tra tất cả các quy tắc theo thời gian thực.
+        -   **Kiểm tra HIBP:** Hash mật khẩu (SHA-1), lấy 5 ký tự đầu, gửi đến API của Have I Been Pwned. Nếu hash suffix có trong kết quả trả về, mật khẩu bị từ chối.
+        -   **Lịch sử:** So sánh hash của mật khẩu mới với N hash gần nhất được lưu trong `PasswordHistory`.
+    -   **Thành phần:** `PasswordPolicyController`, `IPasswordPolicyService`, `PasswordPolicyComponent`.
+
+3.  **Device Fingerprinting & Quản lý Phiên:**
+    -   **Cách vận hành:**
+        1.  **Thu thập:** Khi người dùng tương tác, `DeviceFingerprintService` (Angular) thu thập hàng chục thông số (User Agent, độ phân giải, múi giờ, fonts, canvas, WebGL...) và tạo ra một hash SHA-256 duy nhất.
+        2.  **Gửi:** Hash này được gửi lên backend qua header `X-Device-Fingerprint` trong mỗi request API.
+        3.  **Phân tích:** Backend lưu lại các hash này, liên kết chúng với người dùng, và xây dựng một "hồ sơ thiết bị". Đăng nhập từ một hash hoàn toàn mới sẽ bị coi là rủi ro hơn.
+        4.  **Quản lý:** Người dùng có thể xem danh sách các phiên đang hoạt động (kèm thông tin thiết bị) và thực hiện "Đăng xuất từ xa".
+    -   **Thành phần:** `DeviceFingerprintService`, `TrustedDevicesComponent`, `IDeviceFingerprintService`.
+
+### Lớp 2: Application & API Security
+
+_Mục tiêu: Chặn các cuộc tấn công phổ biến nhắm vào ứng dụng web ngay tại cổng vào._
+
+4.  **Runtime Application Self-Protection (RASP):**
+    -   **Cách vận hành:** `RaspMiddleware` là lớp phòng thủ đầu tiên sau web server. Nó kiểm tra mọi phần của request (URL, query string, body) với các bộ regex được định nghĩa trước để phát hiện các mẫu tấn công.
+        -   Nếu phát hiện `... OR 1=1 --`, nó xác định là **SQL Injection**.
+        -   Nếu phát hiện `<script>alert(1)</script>`, nó xác định là **XSS**.
+        -   Nếu khớp, nó không chuyển request đến controller. Thay vào đó, nó ngay lập tức gọi `ISecurityIncidentService` để tạo sự cố `Critical` và gọi `IThreatIntelligenceService` để chặn IP, sau đó trả về lỗi `400 Bad Request`.
+    -   **Thành phần:** `RaspMiddleware`.
+
+5.  **Moving Target Defense (MTD):**
+    -   **Cách vận hành:**
+        1.  Cả backend (`MtdMiddleware`) và frontend (`ApiUrlService`) đều giữ một `RoutingSecret` giống hệt nhau.
+        2.  Khi frontend cần gọi API `/patients`, nó sẽ tính toán: `hash("patients" + "YYYY-MM-DD" + routingSecret)` để ra một chuỗi động, ví dụ `a1b2`. URL cuối cùng sẽ là `/api/rt-a1b2/patients`.
+        3.  Khi backend nhận được request, `MtdMiddleware` sẽ thực hiện phép tính tương tự. Nếu hash khớp, nó sẽ rewrite URL về `/api/patients` và cho phép request đi tiếp. Nếu không khớp, request bị coi là không hợp lệ và trả về `404 Not Found`.
+    -   **Lợi ích:** Vô hiệu hóa các công cụ quét lỗ hổng tự động dựa trên các đường dẫn API phổ biến.
+
+6.  **Deception Technology:**
+    -   **Cách vận hành:**
+        -   **Honey Token:** Trong `PatientService`, logic `if (id == 999999)` được cài cắm. Nếu một truy vấn nhắm vào ID này, thay vì đi vào CSDL, nó sẽ kích hoạt `IDeceptionService`. Service này tạo sự cố `Critical` và chặn IP vĩnh viễn, sau đó trả về một bản ghi giả mạo.
+        -   **Honeypot:** `HoneypotController` được đăng ký với route `/wp-admin`. Bất kỳ request nào đến đây, dù là GET hay POST, đều sẽ kích hoạt `IDeceptionService` và bị làm chậm 10 giây trước khi nhận lỗi.
+    -   **Mục đích:** Phát hiện sớm các hành vi do thám và đánh lạc hướng kẻ tấn công.
+
+### Lớp 3: Data Protection
+
+_Mục tiêu: Bảo vệ dữ liệu ở mọi trạng thái: khi truyền đi, khi lưu trữ, và ngay cả khi đang được xử lý._
+
+7.  **Mã hóa & Quản lý Khóa:**
+    -   **Cách vận hành:**
+        -   **ALE:** Khi lưu một bệnh nhân mới, `EncryptionInterceptor` của EF Core sẽ tự động tìm các thuộc tính có `[SensitiveData]`, gọi `IAdvancedEncryptionService` để mã hóa chúng trước khi câu lệnh `INSERT` được thực thi.
+        -   **Key Rotation:** Admin có thể bấm nút "Rotate Key" trong UI. Backend sẽ tạo một khóa mới, đánh dấu khóa cũ là "đã xoay vòng", và kích hoạt một background job để đọc dữ liệu cũ, giải mã bằng khóa cũ, và mã hóa lại bằng khóa mới.
+    -   **Thành phần:** `EncryptionInterceptor`, `IAdvancedEncryptionService`, `EncryptionDashboardComponent`.
+
+8.  **Dynamic Data Masking:**
+    -   **Cách vận行:** Khi một controller trả về một `PatientDto`, `JsonSerializer` của .NET sẽ thấy các thuộc tính có `[DataMasking]`. Nó sẽ gọi `DataMaskingConverter`.
+        -   Converter này lấy `HttpContext` hiện tại, kiểm tra xem người dùng có `Claim("permission", "ViewFullPII")` hay không.
+        -   Nếu có, nó ghi giá trị gốc vào JSON.
+        -   Nếu không, nó áp dụng quy tắc che (ví dụ: `ShowLast4`) và ghi giá trị đã được che vào JSON.
+    -   **Kết quả:** Một y tá sẽ thấy số CCCD là `********5678`, trong khi một bác sĩ sẽ thấy số đầy đủ.
+
+9.  **DLP & Watermarking:**
+    -   **Cách vận hành:**
+        -   **DLP:** Sau khi controller thực thi xong, `DlpMiddleware` chặn response body. Nó quét nội dung JSON dựa trên các regex trong `DlpRule`. Nếu phát hiện chuỗi trông giống số thẻ tín dụng và quy tắc là "Block", nó sẽ hủy response và trả về lỗi `403`. Nếu quy tắc là "Redact", nó sẽ thay thế chuỗi đó bằng `***REDACTED***` rồi mới gửi response đi.
+        -   **Watermarking:** Khi gọi `IPdfService.GenerateMedicalRecordPdfAsync`, service này sẽ lấy thông tin người dùng và IP từ `HttpContext`, sau đó dùng thư viện QuestPDF để vẽ một lớp text mờ, xoay 45 độ lên trên nội dung chính của file PDF.
+
+### Lớp 4: Monitoring, Detection & Response
+
+_Mục tiêu: "Thấy" mọi thứ, phát hiện điều bất thường, và phản ứng một cách tự động và thông minh._
+
+10. **Blockchain Audit Trail:**
+    -   **Cách vận hành:** `AuditInterceptor` sau khi ghi một `AuditLog`, nó sẽ gọi `IBlockchainService.AddTransaction`. Giao dịch này được đưa vào một "mempool".
+        -   Một background job (hoặc khi đủ 10 giao dịch) sẽ được kích hoạt để "mine" một khối mới. Nó lấy các giao dịch đang chờ, tính Merkle Root, tìm một `nonce` thỏa mãn yêu cầu Proof-of-Work, sau đó thêm khối mới vào chuỗi và cập nhật trạng thái các giao dịch là "confirmed".
+    -   **UI:** `BlockchainExplorerComponent` hiển thị các khối và giao dịch này, cho phép Admin xác thực lại toàn bộ chuỗi bất cứ lúc nào.
+
+11. **UEBA - Phân tích Hành vi:**
+    -   **Cách vận hành:**
+        -   **Học (Offline):** Một Hangfire job chạy hàng đêm, gọi `IUebaService.UpdateBehavioralBaselinesAsync`. Service này truy vấn `AuditLog` của 90 ngày qua để tính toán và lưu lại các "baseline" hành vi cho mỗi người dùng.
+        -   **Phân tích (Real-time):** Sau mỗi hành động, `AuditInterceptor` gọi `IUebaService.AnalyzeAndAlertOnActivityAsync`. Service này so sánh hành động hiện tại với baseline đã học, tính toán "Điểm Sai lệch" cho từng yếu tố (giờ, IP, hành động...) và tổng hợp lại. Nếu điểm tổng hợp vượt ngưỡng, một `UebaAlert` được tạo.
+    -   **UI:** `UebaDashboardComponent` hiển thị các alert này, cho phép nhà phân tích xem xét và đánh dấu là "False Positive" hoặc leo thang thành một sự cố.
+
+12. **SOAR - Tự động hóa Phản ứng:**
+    -   **Cách vận hành:** `SecurityIncidentService` sau khi tạo một sự cố (`SecurityIncident`), nó sẽ ngay lập tức gọi `ISoarService.HandleIncident`.
+        -   SOAR Service tìm một "playbook" phù hợp với loại và mức độ nghiêm trọng của sự cố.
+        -   Nó thực thi từng bước trong playbook một cách tuần tự:
+            1.  `EnrichData`: Gọi `IThreatIntelligenceService` để lấy thông tin về IP.
+            2.  `Contain_BlockIP`: Gọi `IThreatIntelligenceService` để chặn IP.
+            3.  `Contain_RevokeSessions`: Gọi `ISecurityService` để hủy tất cả các phiên đăng nhập của người dùng.
+            4.  `Notify_SecurityTeam`: Gọi `IEmailService` (hoặc API của Slack/Teams) để gửi cảnh báo.
+    -   **Lợi ích:** Giảm thời gian phản ứng từ vài giờ xuống còn vài giây, đảm bảo các bước ngăn chặn cơ bản được thực hiện ngay lập tức và nhất quán.
+
+---
+
+## 5. Hướng dẫn Vận hành và Bảo trì
+
+-   **Định kỳ:**
+    -   Chạy FIM scan hàng giờ và xem lại các cảnh báo.
+    -   Review UEBA alerts hàng ngày.
+    -   Cập nhật và chạy các Threat Hunting query hàng tuần.
+    -   Review và tối ưu hóa các SOAR playbook hàng tháng.
+    -   Thực hiện Key Rotation hàng quý hoặc hàng năm.
+    -   Chạy Vulnerability Scan sau mỗi lần cập nhật thư viện và review dashboard hàng tuần.
+-   **Khi có sự cố:**
+    1.  Nhận thông báo từ SOAR.
+    2.  Truy cập `SecurityIncidentsComponent` để xem chi tiết sự cố.
+    3.  Sử dụng `UebaDashboardComponent`, `ThreatHuntingComponent`, `SessionPlaybackComponent` để điều tra.
+    4.  Cập nhật trạng thái sự cố và ghi lại các hành động khắc phục.
+
+Tài liệu này cung cấp một cái nhìn tổng quan toàn diện về kiến trúc bảo mật của hệ thống EMR, làm cơ sở cho việc phát triển, triển khai, và vận hành một cách an toàn và tuân thủ.
